@@ -20,7 +20,7 @@ export default class D3BudgetTreeMap{
 
     this.current_level = 0;
 
-    var margin = {top: 20, right: 0, bottom: 0, left: 0},
+    var margin = {top: 40, right: 0, bottom: 0, left: 0},
         width = props.width,
         height = props.height - margin.top - margin.bottom;
 
@@ -44,13 +44,7 @@ export default class D3BudgetTreeMap{
         .children(function(d, depth) { return depth ? null : d._children; })
         .sort(function(a, b) { return a.value - b.value; })
         .ratio( (height / width) * 0.5 * (0.5 + Math.sqrt(5)))
-        // .value(function(d) { 
-        //   if(dataScale(d.value) < 20){
-        //     return 20;
-        //   }
-        //   return dataScale(d.value);
-        //   // return d.amount + 20; 
-        // })
+        // .mode("dice")
         .round(false);
 
     var grandparent = this.grandparent = svg.append("g")
@@ -66,12 +60,14 @@ export default class D3BudgetTreeMap{
         .attr("y", 6 - margin.top)
         .attr("dy", ".75em");
 
+    grandparent.on("mouseover", this.onOver.bind(this,state.root));
+
     this.update(el, state);
   }
 
   update(el,state){
     var props = this.props;
-    var margin = {top: 20, right: 0, bottom: 0, left: 0},
+    var margin = {top: 40, right: 0, bottom: 0, left: 0},
         width = props.width,
         height = props.height - margin.top - margin.bottom;
 
@@ -113,9 +109,11 @@ export default class D3BudgetTreeMap{
 
   onOver(d){
     this.props.onOverBudget && this.props.onOverBudget(d);
+    return true;
   }
 
   _display(grandparent,d) {
+
     var formatNumber = d3.format(",d");
 
     var g1 = this.svg.insert("g", ".grandparent")
@@ -134,8 +132,11 @@ export default class D3BudgetTreeMap{
 
     g.filter(function(d) { return d._children; })
         .classed("children", true)
-        .on("click", this._transition.bind(this,g1))
-        .on("mouseover", this.onOver.bind(this));
+        .on("click", (d) => {
+          this._transition(g1,d);
+          this.onOver(d);
+        })
+        .on("mouseover", this.onOver.bind(this))
 
     g.selectAll(".child")
         .data(function(d) { return d._children || [d]; })
