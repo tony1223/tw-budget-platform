@@ -113,8 +113,8 @@ module.exports = {
   output:output,
   externals:[
     {
-      "react": "var React",
-      "react/addons": "var React"
+      // "react": "var React",
+      // "react/addons": "var React"
     }
   ],
   devServer: {

@@ -26,8 +26,10 @@ export default class FrontLayout extends React.Component {
       }
     ];
 
-    return (
-      <html>
+
+ 
+ return ( 
+    <html>
         <head>
           <meta charset="utf-8" />
         	<title>{this.props.title}</title>
@@ -40,7 +42,6 @@ export default class FrontLayout extends React.Component {
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css" />
           <link rel="stylesheet" href={asset_url("css/main.css")} />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
         </head>
         <body>
           <div className="container">
@@ -61,7 +62,7 @@ export default class FrontLayout extends React.Component {
           
           <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 			    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-          <script src="https://fb.me/react-with-addons-0.13.3.min.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react-with-addons.min.js"></script>
           <script src={"/resource/controller/"+this.props.name+".js"} ></script>
 
         </body>

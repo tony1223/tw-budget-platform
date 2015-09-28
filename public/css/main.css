@@ -1,10 +1,30 @@
 
+
 .div{
   color:red;
-
+}
 
 .budget-amount-title{
   font-size: 36px;
   line-height: 30px;
   text-shadow: #999 3px 3px 2px;
+}
+
+
+/* chart */
+
+
+#chart {width: 960px; height: 500px; background: #ddd; } 
+text {pointer-events: none; } 
+.grandparent text {font-weight: bold; } 
+rect {fill: none; stroke: #fff; } 
+rect.parent, .grandparent rect {stroke-width: 2px; } 
+.grandparent rect {fill: orange; } 
+.grandparent:hover rect {fill: #ee9700; } 
+.children rect.parent, .grandparent rect {cursor: pointer; } 
+.children rect.parent,g > rect.parent {fill: #bbb; fill-opacity: .5; } 
+.children:hover rect.child {fill: #bbb; }
+
+rect:hover{
+  cursor:pointer;
 }
