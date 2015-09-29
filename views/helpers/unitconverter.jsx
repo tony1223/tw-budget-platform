@@ -74,6 +74,13 @@ class UnitMapper{
     return this.callbacks.push(func);
   }
 
+  percent(part,sum){
+    if(sum == 0){
+      return "100%";
+    }
+    return parseInt( (part/sum) *100 * 100,10)/100 +"%";
+  }
+
   update(idx){
     if (this.unit >= 0) {
       $('#unit-selector li:eq(' + this.unit + ') ').removeClass('active');

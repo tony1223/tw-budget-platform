@@ -106,7 +106,7 @@ var output = {
 
 module.exports = {
   entry:entries,
-  exclude:["react","react/addons"],
+  // exclude:["react","react/addons"],
   module:{
     loaders:loadersByExtension(loaders)
   },

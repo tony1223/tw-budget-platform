@@ -65,8 +65,15 @@ router.get('/drilldown/:id', function(req, res, next) {
 
 });
 
-router.get('/table/:id', function(req, res, next) {
+
+router.get('/table/:id/:type?', function(req, res, next) {
   var budget = req.params.id;
+  console.log("type",req.params.type);
+
+  var allowType = {'all':1,'topname':1,'depname':1,'category':1};
+  if(req.params.type != null && allowType[req.params.type] == null){
+    return next();
+  }
 
   db.getData(3).then(function(data){
     res.render('dispatch.jsx', 
@@ -77,12 +84,14 @@ router.get('/table/:id', function(req, res, next) {
       nav:"home",
       pageInfo:data,
       react:{
+        _subnav:req.params.type || 'all',
         budget_links:data.budgets,
         budget_id:data.id
       }
     });
   });
 });
+
 
 module.exports = router;
 

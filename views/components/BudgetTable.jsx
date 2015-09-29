@@ -3,15 +3,15 @@ import React from "react";
 import unitconverter from "./../helpers/unitconverter.jsx";
 import cx from 'classnames';
 
+import BaseComponent from './BaseComponent.jsx';
+import Loading from './Loading.jsx';
 
-class BudgetTableRow extends React.Component {
+
+class BudgetTableRow extends BaseComponent {
 
   constructor(props) {
     super(props);
-    this.state = {
-      item:props.item
-    };
-
+    this.state ={open:false};
   }
 
 
@@ -22,98 +22,96 @@ class BudgetTableRow extends React.Component {
     // }else{
     //   $(React.findDOMNode(this.refs['detail-'+b.code])).hide();
     // }
-    this.props.onMoreDetail(b);
+    this.setState({open:!!!this.state.open});
 
   }
 
-  shouldComponentUpdate(){
-    return false;
-  }
+  // shouldComponentUpdate(){
+  //   return false;
+  // }
 
 
   render(){
-    var b = this.state.item;
+    var b = this.props.item;
     return (
-      <tr>
-        <td>{b.year}</td>
-        <td>{b.code.split("-")[1]}</td>
-        <td>{b.topname}</td>
-        <td>{b.depname}</td>
-        <td>{b.category}</td>
-        <td>{b.name}</td>
-        <td>{unitconverter.convert(parseInt(b.amount,10), null, true)}</td>
-        <td>
-          <div style={{color:(b.change == 0 ? "black" :b.change > 0 ? "red" :"green")}}>
-            {b.change >0 ? "+" :""}
-            {parseInt( (b.change/b.last_amount) *100 * 100,10)/100 +"%"}
-            <br />
-            (約差 {unitconverter.convert(b.change, null, true) })
-          </div>
-        </td>
-        <td><button onClick={this.props.onMoreDetail.bind(this,b)}>看更多細節</button></td>
-      </tr>
+      <tbody stlye={{display: this.props.show? '':'none'}}>
+        <tr>
+          <td>{b.year}</td>
+          <td>{b.code.split("-")[1]}</td>
+          <td>{b.topname}</td>
+          <td>{b.depname}</td>
+          <td>{b.category}</td>
+          <td>{b.name}</td>
+          <td>{unitconverter.convert(parseInt(b.amount,10), null, true)}</td>
+          <td>
+            <div style={{color:(b.change == 0 ? "black" :b.change > 0 ? "green" :"red")}}>
+              {b.change > 0 ? "+" :""}
+              {unitconverter.percent(b.change,b.last_amount)}
+              <br />
+              (約差 {unitconverter.convert(b.change, null, true) })
+            </div>
+          </td>
+          <td><button onClick={this.onMoreDetail.bind(this,b)}>看更多細節</button></td>
+        </tr>
+        <tr style={{display:this.state.open ?"":"none" }} >
+          <td></td>
+          <td colSpan={9} dangerouslySetInnerHTML={{__html:b.comment}}>
+          </td>
+        </tr>
+      </tbody>
+
     );
   }
 }
 
 
-export default class BudgetTable extends React.Component {
+export default class BudgetTable extends BaseComponent {
 
   constructor(props) {
     super(props);
     this.state = {
-      items:props.items,
       sort:null,
       sortAsc:false
     };
 
   }
 
-
-  onMoreDetail(b){
-
-    // if(this.state.explored[b.code]){
-    //   $(React.findDOMNode(this.refs['detail-'+b.code])).show();
-    // }else{
-    //   $(React.findDOMNode(this.refs['detail-'+b.code])).hide();
-    // }
-
-    var obj = {};
-    obj["explore-"+b.code] = !!! this.state["explore-"+b.code]
-
-    this.setState(obj);
-  }
-
   doSortBy(field,defAsc){
     if(this.state.sort == field){
-      this.setState({sortAsc: !!!this.state.sortAsc });
+      this.setStateWithLoading({sortAsc: !!!this.state.sortAsc });
     }else{
-      this.setState({sort:field,sortAsc:defAsc});
+      this.setStateWithLoading({sort:field,sortAsc:defAsc});
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    var items = this.state.items || [];
-    if(items.length != (nextState.items ||[] ).length){
-      return true;
-    }
-
-    for(var k in this.state){
-      if(k.indexOf("explore-") == -1){
-        return true;
-      }
-      if(this.state[k] != nextState[k]){
-        return true;
-      }
-    }
-
-    console.log(arguments);
-    return false;
+  doSearch(){
+    var input = React.findDOMNode(this.refs.search).value;
+    this.setStateWithLoading({search:input},500);
   }
 
   render(){
-    var {items,sort,sortAsc} = this.state;
+    var {search,sort,sortAsc} = this.state;
+    var items = this.props.items;
 
+    var hide = {};
+
+    if(search != null && $.trim(search) != ""){
+      let newitems = [];
+      items.forEach((item)=>{ 
+        if(item.topname.indexOf(search) != -1){
+          newitems.push(item);
+        }else if(item.depname.indexOf(search) != -1){
+          newitems.push(item);
+        }else if(item.category.indexOf(search) != -1){
+          newitems.push(item);
+        }else if(item.name.indexOf(search) != -1){
+          newitems.push(item);
+        }else{
+          hide[item.code];
+        }
+      });
+      items = newitems;
+    }
     if(sort != null){
       items = items.sort( (a,b) => { return (a[sort] - b[sort]) * (sortAsc ? 1 :-1 ); } )
     }
@@ -121,6 +119,11 @@ export default class BudgetTable extends React.Component {
     var s = new Date().getTime();
     var h = (
       <div className='row'>
+        <p><input ref='search' onKeyDown={this.bindKeyEnter(this.doSearch)} type='text' /> 
+          <button onClick={this.doSearch.bind(this)}>搜尋</button>
+          <br />
+          <small>(搜尋款項目名稱、模糊比對)</small>
+        </p>
         <table className='table table-bordered'>
           <tbody>
             <tr>
@@ -156,15 +159,11 @@ export default class BudgetTable extends React.Component {
               </td>
             </tr>
           </tbody>
-          {items && items.map((b)=>{
-            return <tbody key={b.code} >
-              <BudgetTableRow onMoreDetail={this.onMoreDetail.bind(this,b)} key={b.code+"-row"} item={b} /> 
-              <tr ref={'detail-'+b.code} style={{display:this.state["explore-"+b.code] ?"":"none" }} >
-                <td></td>
-                <td colSpan={9} dangerouslySetInnerHTML={{__html:b.comment}}>
-                </td>
-               </tr>
-            </tbody>;
+          {(this.props.waiting || this.state._waiting ) && 
+              <tr><td colSpan={9}><Loading /></td></tr>
+          }
+          { !(this.props.waiting || this.state._waiting ) && items && items.map((b)=>{
+            return <BudgetTableRow show={!!!hide[b.code]} item={b} key={b.code} /> 
           })}
         </table>
       </div>

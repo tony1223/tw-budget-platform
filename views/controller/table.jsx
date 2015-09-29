@@ -4,10 +4,13 @@ import unitconverter from "./../helpers/unitconverter.jsx";
 // import rd3 from 'react-d3';
 
 import BudgetTable from './../components/BudgetTable.jsx';
+import BudgetGroupTable from './../components/BudgetGroupTable.jsx';
 
-// import sample from './../helpers/sampledata.jsx';
+import BaseComponent from './../components/BaseComponent.jsx';
+import cx from 'classnames';
 
-export default class TableView extends React.Component {
+
+export default class TableView extends BaseComponent {
 
   constructor(props) {
     super(props);
@@ -30,22 +33,24 @@ export default class TableView extends React.Component {
             map[r.code] = parseInt(r.amount,10);
           });
           res.forEach((r) => {
-            r.last_amount = map[r.code] || 0;
-            r.change = r.last_amount - parseInt(r.amount,10);
+            r.last_amount = parseInt(map[r.code] || 0,10);
+            r.change = parseInt(r.amount,10) - parseInt(r.last_amount,10) ;
             r.comment = this._comment(r.comment);
           });
         }
         this.setState({
-          last_budget:res
+          last_budget:res,
+          waiting:false
         });
-        this.refs.budget.setState({items:res});
       });
     }
 
     this.state = {
       budget_links:this.props.budget_links,
       last_budget:this.props.last_budget,
-      budgets:this.props.budgets
+      budgets:this.props.budgets,
+      waiting:true,
+      _subnav:props._subnav
     };
   }
 
@@ -81,12 +86,59 @@ export default class TableView extends React.Component {
     }
   }
 
+  doNav(nav){
+    this.setState({_subnav:nav});
+    this.setUrl("/table/"+this.props.budget_id+"/"+nav,window.title);
+    return false;
+  }
+
   render(){
     var {last_budget} = this.state;
     // var {drilldown} = data;
+
+    var keysMap = {
+      topname:{
+        topname:{name:"款別"}
+      },
+      depname:{
+        topname:{name:"款別"},
+        depname:{name:"項別"}
+      },
+      category:{
+        topname:{name:"款別"},
+        depname:{name:"項別"},
+        category:{name:"目別"}
+      }
+    };
+
     return (
-      <div>
-        <BudgetTable ref='budget' items={last_budget} /> 
+      <div className={cx({"cp-loading":this._waiting})}>
+        <ul className="nav nav-tabs">
+          <li role="presentation" className={cx({active:this.state._subnav == 'all'})}>
+            <a onClick={this.doNav.bind(this,'all')} href={"/table/"+this.props.budget_id+"/all"}>總科目表</a>
+          </li>
+          <li role="presentation" className={cx({active:this.state._subnav == 'topname'})} >
+            <a onClick={this.doNav.bind(this,'topname')} href={"/table/"+this.props.budget_id+"/topname"}>只看款</a>
+          </li>
+          <li role="presentation" className={cx({active:this.state._subnav == 'depname'})} >
+            <a onClick={this.doNav.bind(this,'depname')} href={"/table/"+this.props.budget_id+"/depname"}>只看項</a>
+          </li>
+          <li role="presentation" className={cx({active:this.state._subnav == 'category'})} >
+            <a onClick={this.doNav.bind(this,'category')} href={"/table/"+this.props.budget_id+"/category"}>只看目</a>
+          </li>
+        </ul>
+        {this.state._subnav == 'all' && <div style={{padding:"15px"}} className={cx({row:1})}>
+          <br />
+          <BudgetTable waiting={this.state.waiting}  items={last_budget} />  
+        </div>}
+        {
+          this.state._subnav != 'all' && <div style={{padding:"15px"}} className={cx({row:1,hidden:this.state._subnav == 'all'})}>
+          <div className='col-md-8 '>
+            <br />
+            <BudgetGroupTable keys={keysMap[this.state._subnav]}  waiting={this.state.waiting} items={last_budget} />
+          </div>
+        </div>
+        }
       </div>
     );
   }
