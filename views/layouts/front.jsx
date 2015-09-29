@@ -23,11 +23,14 @@ export default class FrontLayout extends React.Component {
         key:"/bubble/3",
         url:"/bubble/3",
         label:"變化圖"
+      },
+      {
+        key:"/table/3",
+        url:"/table/3",
+        label:"表格"
       }
     ];
 
-
- 
  return ( 
     <html>
         <head>

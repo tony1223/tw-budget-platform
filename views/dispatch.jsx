@@ -51,6 +51,7 @@ export default class Dispatcher extends React.Component {
       	<div id='react-root' dangerouslySetInnerHTML={{__html:childs}}></div>
         {dev}
         <div dangerouslySetInnerHTML={{__html:this.props.LRScript}}></div>
+        <script dangerouslySetInnerHTML={{__html:"window.react_data= "+JSON.stringify(this.props.react)}}></script>
       </DefaultLayout>
     );
   }

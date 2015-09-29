@@ -7,7 +7,7 @@ import BudgetTreeMap from './../components/d3BudgetTreemap.jsx';
 
 import sample from './../helpers/sampledata.jsx';
 
-export default class Index extends React.Component {
+export default class Drilldown extends React.Component {
 
   constructor(props) {
     super(props);
@@ -90,8 +90,7 @@ export default class Index extends React.Component {
 
     var newmap = {
       name:"總預算",
-      children:[
-      ]
+      children:[]
     };
     var value = 0;
     this._dimension(items,newmap,k1,(item) => {
@@ -119,8 +118,6 @@ export default class Index extends React.Component {
     return newmap;
   }
 
-
-
   _drillName(drill,ignoreParent){
     if(ignoreParent != true && drill.parent ){
       return this._drillName(drill.parent) + " > " + drill.name ;
@@ -144,19 +141,19 @@ export default class Index extends React.Component {
     // var {drilldown} = data;
     return (
       <div className='row'>
-        <div className='col-md-6'>
+        <div className='col-md-8'>
           <div ref="chart" className="Chart"></div>
 
           <div>
             
           </div>
         </div>
-        <div className='col-md-3'>
+        <div className='col-md-4'>
           <table className='table table-bordered'>
             <tbody>
               <tr>
-                <td>預算</td>
-                <td> { selectedDrill && this._drillName(selectedDrill) } </td>
+                <td className='col-xs-6'>預算</td>
+                <td className='col-xs-6'> { selectedDrill && this._drillName(selectedDrill) } </td>
               </tr>
               <tr>
                 <td>金額</td>
@@ -167,6 +164,16 @@ export default class Index extends React.Component {
                     </span>
                   </p>
                   <p> (即為{ selectedDrill && unitconverter.convert(selectedDrill.value,-1,true) }) </p>
+                </td>
+              </tr>
+              <tr>
+                <td>佔總預算比例</td>
+                <td> 
+                  <p>
+                    <span>
+                      { selectedDrill && ( parseInt(selectedDrill.value/this.state.sampleData.value *10000 ,10)/100+"%") } 
+                    </span>
+                  </p>
                 </td>
               </tr>
               <tr>
@@ -188,6 +195,6 @@ export default class Index extends React.Component {
 
 
 if(global.window != null){
-  React.render(React.createElement(Index), document.getElementById("react-root"));
+  React.render(React.createElement(Drilldown,window.react_data), document.getElementById("react-root"));
 }
 

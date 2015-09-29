@@ -77,6 +77,7 @@ export default class D3BudgetTreeMap{
 
     var root = state.root;
 
+    this.root = root;
   
     var x = d3.scale.linear()
         .domain([0, width])
@@ -157,7 +158,16 @@ export default class D3BudgetTreeMap{
 
     g.append("text")
         .attr("dy", "1.75em")
-        .text(function(d) { return unitconverter.convert(d.value,null); })
+        .text((d) => { 
+          return unitconverter.convert(d.value,null) ; 
+        })
+        .call(this._text.bind(this));
+        
+    g.append("text")
+        .attr("dy", "2.75em")
+        .text((d) => { 
+          return "("+ (parseInt((d.value / this.root.value )* 10000,10)/100) +"%)";; 
+        })
         .call(this._text.bind(this));
 
     return g;
