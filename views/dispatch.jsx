@@ -20,10 +20,10 @@ export default class Dispatcher extends React.Component {
 			// props[k] = this.props[k];
   	// }
 
-    var render = function(comp,props,views){
-      var datas = JSON.stringify(views);
+    var render = function(comp,props){
+      var datas = JSON.stringify(props);
       var childs = React.renderToString(React.createElement(comp,props)) +
-        "<script> window._react_options = "+datas+" </script> ";
+        "<script> window.react_data = "+datas+" </script> ";
       return childs;
     };
 
@@ -46,11 +46,10 @@ export default class Dispatcher extends React.Component {
     }
 
     return (
-      <DefaultLayout pageInfo={this.props.pageInfo} title={this.props.pageInfo.title} name={this.props.comp} nav={this.props.nav}>
+      <DefaultLayout scripts={comp.renderServerScripts && comp.renderServerScripts()} pageInfo={this.props.pageInfo} title={this.props.pageInfo.title} name={this.props.comp} nav={this.props.nav}>
       	<div id='react-root' dangerouslySetInnerHTML={{__html:childs}}></div>
         {dev}
         <div dangerouslySetInnerHTML={{__html:this.props.LRScript}}></div>
-        <script dangerouslySetInnerHTML={{__html:"window.react_data= "+JSON.stringify(this.props.react)}}></script>
       </DefaultLayout>
     );
   }

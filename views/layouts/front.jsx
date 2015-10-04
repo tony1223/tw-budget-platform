@@ -7,26 +7,37 @@ import BootStrapMenu from "../components/bootStrapMenu.jsx";
 
 export default class FrontLayout extends React.Component {
   render() {
+   var GA =  " (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ "+
+     "   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), "+
+     "   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) "+
+     "   })(window,document,'script','//www.google-analytics.com/analytics.js','ga'); "+
+     "    "+
+     "   ga('create', 'UA-67262972-1', 'auto'); "+
+     "   ga('send', 'pageview'); "+
+     "    "+
+     "   ga('create', 'UA-67265163-1', 'auto', {'name': 'newTracker'}); "+
+     "   ga('newTracker.send', 'pageview'); ";    
 
+     console.log(this.props);
     var items = [
+      // { 
+      //   key:"",
+      //   url:"/",
+      //   label:"預算視覺化首頁"
+      // },
       { 
-        key:"",
-        url:"/",
-        label:"預算視覺化首頁"
-      },
-      { 
-        key:"/drilldown/3",
-        url:"/drilldown/3",
+        key:"/drilldown/",
+        url:"/drilldown/"+this.props.pageInfo.id,
         label:"鳥瞰圖"
       },
       {
-        key:"/bubble/3",
-        url:"/bubble/3",
+        key:"/bubble/",
+        url:"/bubble/"+this.props.pageInfo.id,
         label:"變化圖"
       },
       {
-        key:"/table/3",
-        url:"/table/3",
+        key:"/table/",
+        url:"/table/"+this.props.pageInfo.id,
         label:"科目預算表格"
       }
     ];
@@ -50,7 +61,7 @@ export default class FrontLayout extends React.Component {
           <div className="container">
             <nav className="navbar navbar-default">
               <div className="container-fluid">
-                <BootStrapMenu name={this.props.pageInfo.unit} items={items} nav={this.props.nav} />
+                <BootStrapMenu name={this.props.pageInfo.title} items={items} nav={this.props.nav} />
               </div>
             </nav>
             {this.props.children}
@@ -67,7 +78,7 @@ export default class FrontLayout extends React.Component {
 			    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
          {/* <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react-with-addons.min.js"></script> */}
           <script src={"/resource/controller/"+this.props.name+".js"} ></script>
-
+          <script dangerouslySetInnerHTML={{__html:GA}}></script>
         </body>
       </html>
     );

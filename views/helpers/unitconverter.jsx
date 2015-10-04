@@ -78,7 +78,17 @@ class UnitMapper{
     if(sum == 0){
       return "100%";
     }
-    return parseInt( (part/sum) *100 * 100,10)/100 +"%";
+    
+    var p = (parseInt( (part/sum) *100 * 100,10)/100);
+
+    return (p > 0 ? "+"+p:p)+"%";
+  }
+
+  _percent(part,sum){
+    if(sum == 0){
+      return 1;
+    }
+    return (part/sum);
   }
 
   update(idx){

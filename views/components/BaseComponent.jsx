@@ -4,6 +4,15 @@ import React from "react";
 
 export default class BaseComponent extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = this.state || {};
+  }
+
+  isClient(){
+    return global.window != null;
+  }
+
   setStateWithLoading(state,delay){
     if(delay == null){
       delay = 0;

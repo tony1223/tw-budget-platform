@@ -4,19 +4,58 @@ import unitconverter from "./../helpers/unitconverter.jsx";
 // import rd3 from 'react-d3';
 
 import BudgetTreeMap from './../components/d3BudgetTreemap.jsx';
+import CommentHelper from './../helpers/comment.jsx';
 
-import sample from './../helpers/sampledata.jsx';
+import Util from '../helpers/util';
 
-export default class Drilldown extends React.Component {
+import BaseComponent from './../components/BaseComponent.jsx';
+export default class Drilldown extends BaseComponent {
 
   constructor(props) {
     super(props);
+    if(global.window != null){
+      Util.requestJSONs(this.props.budget_links).then((datas)=>{
+        debugger;        
+        var res = datas[0];
+        if(res.length && datas.length > 1 && res[0].last_amount == null){
+          var map = {};
+          datas[1].forEach((data)=>{ map[data.code] = data.amount });
 
-    var data = this._dimensions(sample.budgets,'topname','depname','category','name');
-    this.state = {
-      sampleData: data,
-      selectedDrill:data
-    };
+          res.forEach((r) => {
+            r.last_amount = parseInt(map[r.code] || 0,10);
+            r.change = parseInt(r.amount,10) - parseInt(r.last_amount,10) ;
+            r.comment = CommentHelper.refine(r.comment);
+          });
+        }else{
+          res.forEach((r) => {
+            r.change = parseInt(r.amount,10) - parseInt(r.last_amount,10) ;
+            r.comment = CommentHelper.refine(r.comment);
+          });
+        }
+        var data = this._dimensions(res,'topname','depname','category','name');
+        this.setState({
+          sampleData: data,
+          selectedDrill:data
+        });
+        var el = React.findDOMNode(this.refs.chart);
+
+        var width = Math.min($(el).width(),$(window).width());
+        var height = 500;
+
+        this.chart = new BudgetTreeMap(el, {
+          width: width - 15,
+          height: height,
+          // height: 1000,
+          onOverBudget:(d) =>{
+            this.setState({selectedDrill:d});
+          }
+        }, {root:data});
+      });
+      
+    }
+
+    this.state = {};
+
   }
   
   doFocusDrill(drill){
@@ -24,30 +63,12 @@ export default class Drilldown extends React.Component {
   }
 
   componentDidMount() {
-    var el = React.findDOMNode(this.refs.chart);
 
-    var width = Math.min($(el).width(),$(window).width());
-    var height = 500;
-
-    this.chart = new BudgetTreeMap(el, {
-      width: width - 15,
-      height: height,
-      // height: 1000,
-      onOverBudget:(d) =>{
-        this.setState({selectedDrill:d});
-      }
-    }, this.getChartState());
   }
 
   componentDidUpdate() {
     var el = React.findDOMNode(this.refs.chart);
     // this.chart.update(el, this.getChartState());
-  }
-
-  getChartState() {
-    return {
-      root: this.state.sampleData
-    };
   }
 
   componentWillUnmount() {
@@ -115,6 +136,7 @@ export default class Drilldown extends React.Component {
     });
     newmap._children = newmap.children;
     newmap.value = value;
+    newmap.name = " 總預算 " + unitconverter.convert(value,null,false)+ " ";
     return newmap;
   }
 
@@ -152,8 +174,8 @@ export default class Drilldown extends React.Component {
           <table className='table table-bordered'>
             <tbody>
               <tr>
-                <td className='col-xs-6'>預算</td>
-                <td className='col-xs-6'> { selectedDrill && this._drillName(selectedDrill) } </td>
+                <td className='col-xs-3'>預算</td>
+                <td className='col-xs-9'> { selectedDrill && this._drillName(selectedDrill) } </td>
               </tr>
               <tr>
                 <td>金額</td>
@@ -192,7 +214,6 @@ export default class Drilldown extends React.Component {
     );
   }
 }
-
 
 if(global.window != null){
   React.render(React.createElement(Drilldown,window.react_data), document.getElementById("react-root"));

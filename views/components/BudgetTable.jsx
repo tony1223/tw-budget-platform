@@ -45,7 +45,6 @@ class BudgetTableRow extends BaseComponent {
           <td>{unitconverter.convert(parseInt(b.amount,10), null, true)}</td>
           <td>
             <div style={{color:(b.change == 0 ? "black" :b.change > 0 ? "green" :"red")}}>
-              {b.change > 0 ? "+" :""}
               {unitconverter.percent(b.change,b.last_amount)}
               <br />
               (約差 {unitconverter.convert(b.change, null, true) })

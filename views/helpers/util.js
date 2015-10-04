@@ -19,12 +19,6 @@ var util = {
 		}
 		return "/"+str;
 	},
-	profile_url:function(userkey){
-		if(userkey.indexOf("id=") != -1){
-			return "http://facebook.com/profile.php?"+userkey;
-		}
-		return "http://facebook.com/"+userkey;
-	},
 	format_date:function(d){
 		var pad = function(num){
 			if(num < 10){
@@ -68,15 +62,31 @@ var util = {
 		});
 		return p;
 	},
-	comment_status:function(statusCode){
-	    var status = null;
-	    switch(statusCode){ 
-	        case 0: status = "待確認";break;
-	        case -1: status = "一般留言";break;
-	        case 1: status = "跳針";break;
-	        case 2: status = "沒問題";break;
-	    }
-	    return status;
+	requestJSONs(urls){
+
+		if(global.window){
+			if(urls == null){
+				return Promise.resolve([]);
+			}
+			var promises = urls.map((url)=>{
+				var p = new Promise((ok,fail)=>{
+					$.get(url).then(function(body){
+						var _body = body;
+						if(body != null && typeof body =="string"){
+							_body = JSON.parse(body);
+						}
+
+						ok(_body);
+
+					});
+				});
+				return p;
+			});
+
+			return Promise.all(promises);
+		}
+
+		throw "client only";
 	},
 	each:function(ary,cb){
 		if(ary == null){

@@ -33,7 +33,7 @@ rect.parent, .grandparent rect {stroke-width: 2px; }
 .children rect.parent,g > rect.parent {fill: #bbb; fill-opacity: .5; } 
 .children:hover rect.child {fill: #bbb; }
 
-rect:hover{
+.budget-circle{
   cursor:pointer;
 }
 
@@ -160,3 +160,11 @@ rect:hover{
             transform: scale(1);
   }
 }
+
+
+/* FB Comment */
+
+.fb_iframe_widget,
+.fb_iframe_widget span,
+.fb_iframe_widget iframe[style]  {width: 100% !important;}
+

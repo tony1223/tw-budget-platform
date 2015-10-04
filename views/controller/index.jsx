@@ -1,13 +1,19 @@
 import React from "react";
+import BaseComponent from './../components/BaseComponent.jsx';
 
-export default class Index extends React.Component {
+
+export default class Index extends BaseComponent {
   render(){
-  return (
+    return (
       <div>
-        <h1></h1>
+        <h1>預算視覺化清單</h1>
         
+        <ul>
+          {this.props.budgets.map((b)=>
+            <li><a href={"/drilldown/"+b.id}>{b.title}</a></li>
+          )}
+        </ul>
         <div>
-          put content here!
         </div>
       </div>
     );

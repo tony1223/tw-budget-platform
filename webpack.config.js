@@ -72,11 +72,11 @@ var loadersByExtension = function(obj) {
 };
 
 var loaders = {
-  "jsx": hotComponents ? ["react-hot-loader", "babel-loader?stage=0"] : "babel-loader?stage=0",
-  "js": {
-    loader: "babel-loader?stage=0",
-    include: path.join(__dirname, "app")
-  },
+  "js|jsx": hotComponents ? ["react-hot-loader", "babel-loader?stage=0"] : "babel-loader?stage=0",
+  // "js": {
+  //   loader: "babel-loader?stage=0",
+  //   include: path.join(__dirname, "app")
+  // },
   "json": "json-loader",
   "json5": "json5-loader",
   "txt": "raw-loader",

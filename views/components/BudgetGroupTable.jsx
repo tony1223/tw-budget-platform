@@ -6,8 +6,6 @@ import cx from 'classnames';
 import BaseComponent from './BaseComponent.jsx';
 import Loading from './Loading.jsx';
 
-
-
 export default class BudgetGroupTable extends BaseComponent {
 
   constructor(props) {
@@ -131,10 +129,10 @@ export default class BudgetGroupTable extends BaseComponent {
           <tbody>
             <tr>
               {Object.keys(this.props.keys).map(key => (
-                  <td>{this.props.keys[key].name}</td>
+                  <td className='col-xs-1' >{this.props.keys[key].name}</td>
                 ) )}
 
-              <td style={{cursor:"pointer"}} className='col-xs-3' onClick={this.doSortBy.bind(this,'amount',false)}>金額 &nbsp;
+              <td style={{cursor:"pointer"}} className='col-xs-2' onClick={this.doSortBy.bind(this,'amount',false)}>金額 &nbsp;
                 <i  
                   className={
                     cx({'glyphicon':true,
@@ -145,7 +143,7 @@ export default class BudgetGroupTable extends BaseComponent {
                   } />
               </td>
               <td className='col-xs-2'>總預算約</td>
-              <td style={{cursor:"pointer"}} className='col-xs-3'  onClick={this.doSortBy.bind(this,'change',false)}>
+              <td style={{cursor:"pointer"}} className='col-xs-2'  onClick={this.doSortBy.bind(this,'change',false)}>
                 前一年差額 &nbsp;
                 <i 
                   className={
@@ -173,7 +171,6 @@ export default class BudgetGroupTable extends BaseComponent {
                 {(
                   b.last_amount != null? 
                     (<div style={{color:(b.change == 0 ? "black" :b.change > 0 ? "green" :"red")}}>
-                  {b.change >0 ? "+" :""}
                   {unitconverter.percent(b.change,b.last_amount)}
                   <br />
                   (約差 {unitconverter.convert(b.change, null, true) })

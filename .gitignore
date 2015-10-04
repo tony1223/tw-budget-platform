@@ -1,4 +1,5 @@
-
+config.js
 .DS_Store
 public/resource
 node_modules
+sessions

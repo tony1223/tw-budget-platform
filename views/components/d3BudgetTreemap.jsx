@@ -157,16 +157,16 @@ export default class D3BudgetTreeMap{
         .call(this._text.bind(this));
 
     g.append("text")
-        .attr("dy", "1.75em")
+        .attr("dy", "1.95em")
         .text((d) => { 
           return unitconverter.convert(d.value,null) ; 
         })
         .call(this._text.bind(this));
         
     g.append("text")
-        .attr("dy", "2.75em")
+        .attr("dy", "3.15em")
         .text((d) => { 
-          return "("+ (parseInt((d.value / this.root.value )* 10000,10)/100) +"%)";; 
+          return ""+ (parseInt((d.value / this.root.value )* 10000,10)/100) +"%";; 
         })
         .call(this._text.bind(this));
 
@@ -263,7 +263,7 @@ export default class D3BudgetTreeMap{
       back = " > 回上一層" ;
     }
     if(d.parent ){
-      return this._name(d.parent,d) + " > " + d.name +back;
+      return this._name(d.parent,d) + " > " + d.name +" " + unitconverter.convert(d.value,null,false) +back;
     }
     return d.name + back;
   }
