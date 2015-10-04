@@ -3,7 +3,7 @@ import Promise from 'promise';
 var express = require('express');
 var router = express.Router();
 
-import BudgetModel from '../model/BudgetModel.jsx';
+import BudgetModel from '../model/budgetmodel.jsx';
 
 
 // var db = {

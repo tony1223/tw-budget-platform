@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-import UserModel from '../model/UserModel.jsx';
+import UserModel from '../model/usermodel.jsx';
 
 
 router.get('/signup', function(req, res, next) {
