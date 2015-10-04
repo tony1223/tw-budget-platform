@@ -20,11 +20,6 @@ export default class FrontLayout extends React.Component {
 
      console.log(this.props);
     var items = [
-      // { 
-      //   key:"",
-      //   url:"/",
-      //   label:"預算視覺化首頁"
-      // },
       { 
         key:"/drilldown/",
         url:"/drilldown/"+this.props.pageInfo.id,
@@ -39,6 +34,11 @@ export default class FrontLayout extends React.Component {
         key:"/table/",
         url:"/table/"+this.props.pageInfo.id,
         label:"科目預算表格"
+      },
+      {
+        key:"/",
+        url:"/",
+        label:"回所有預算視覺化清單"
       }
     ];
 

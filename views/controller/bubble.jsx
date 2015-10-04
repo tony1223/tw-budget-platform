@@ -3,7 +3,7 @@ import React from "react";
 import unitconverter from "./../helpers/unitconverter.jsx";
 // import rd3 from 'react-d3';
 
-import D3BudgetBubble from './../components/D3BudgetBubble.jsx';
+import D3BudgetBubble from './../components/d3BudgetBubble.jsx';
 
 import CommentHelper from './../helpers/comment.jsx';
 import Loading from './../components/Loading.jsx';
@@ -145,7 +145,11 @@ export default class Bubble extends BaseComponent {
               網友留言 
               <hr />
               <div className='col-md-12'>
-                {<FBComment href={"http://tpebudget.tonyq.org/budget/"+infoBudget.code} />}
+                {
+                  this.props.budget_id == 1 ?
+                    <FBComment href={"http://tpebudget.tonyq.org/budget/"+infoBudget.code} />
+                  : <FBComment href={"http://budget.tonyq.org/bubble/"+this.props.budget_id+"/"+infoBudget.code} />
+                }
               </div>
             </div>}
             

@@ -15,7 +15,6 @@ export default class Drilldown extends BaseComponent {
     super(props);
     if(global.window != null){
       Util.requestJSONs(this.props.budget_links).then((datas)=>{
-        debugger;        
         var res = datas[0];
         if(res.length && datas.length > 1 && res[0].last_amount == null){
           var map = {};
