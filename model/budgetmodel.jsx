@@ -8,7 +8,7 @@ class BudgetModel{
 
   getAll(page,pageSize){
     return pg.then(function([db,queryResult]){
-      return db.query("select * from budget limit ${pageSize} offset ${offset}",
+      return db.query("select * from budget order by ts asc limit ${pageSize} offset ${offset}",
         {pageSize:pageSize,offset:(page-1) * pageSize});
       // db.queryResult
     });

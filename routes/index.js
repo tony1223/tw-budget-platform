@@ -29,7 +29,7 @@ import BudgetModel from '../model/budgetmodel.jsx';
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-  BudgetModel.getAll(1,20).then(function(budgets){
+  BudgetModel.getAll(1,1000).then(function(budgets){
     res.render('dispatch.jsx', 
     { 
       comp:'index',
