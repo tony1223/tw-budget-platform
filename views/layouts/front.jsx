@@ -68,8 +68,7 @@ export default class FrontLayout extends React.Component {
             <div className="footer">
               <div className="container" style={{paddingBottom: 20}}>
                 <hr />
-                <p>Powered by TonyQ, welcome to fork or contribute on our Github projects
-                 </p>
+                <p>Powered by TonyQ , inpsired from <a href="https://github.com/g0v/twbudget">g0v 中央政府總預算系統</a>, welcome to fork or contribute on <a href="https://github.com/tony1223/tw-budget-platform">the Github projects</a>.</p>
               </div>
             </div>
           </div>
