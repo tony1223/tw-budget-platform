@@ -61,7 +61,9 @@ export default class FrontLayout extends React.Component {
           
           <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
           <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-         {/* <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react-with-addons.min.js"></script> */}
+           <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react-with-addons.min.js"></script> 
+           <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script> 
+        
           <script src={"/resource/controller/"+this.props.name+".js"} ></script>
           <script dangerouslySetInnerHTML={{__html:GA}}></script>
           {this.props.scripts}
