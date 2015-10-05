@@ -41,15 +41,15 @@ export default class Dispatcher extends React.Component {
       childs = render(comp,props,this.props.views);
     }
   	var dev = null;
-    if(this.props.mode == "develope"){
-      dev = (<script src={"/webpack-dev-server.js"} ></script>);
-    }
+   //  if(this.props.mode == "develope"){
+   //    dev = (<script src={"/webpack-dev-server.js"} ></script>);
+   //  }
 
     return (
       <DefaultLayout scripts={comp.renderServerScripts && comp.renderServerScripts()} pageInfo={this.props.pageInfo} title={this.props.pageInfo.title} name={this.props.comp} nav={this.props.nav}>
       	<div id='react-root' dangerouslySetInnerHTML={{__html:childs}}></div>
         {dev}
-        <div dangerouslySetInnerHTML={{__html:this.props.LRScript}}></div>
+        { /* <div dangerouslySetInnerHTML={{__html:this.props.LRScript}}></div> */ }
       </DefaultLayout>
     );
   }

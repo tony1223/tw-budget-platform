@@ -15,8 +15,8 @@ var user = require('./routes/user');
 
 var app = express();
 
-livereload = require('express-livereload');
-livereload(app, {watchDir:process.cwd() + "/views"});
+// livereload = require('express-livereload');
+// livereload(app, {watchDir:process.cwd() + "/views"});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

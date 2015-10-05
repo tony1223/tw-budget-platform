@@ -2,7 +2,7 @@ import React from "react";
 
 import BaseComponent from './../../components/BaseComponent.jsx';
 // import ReCAPTCHA from "react-google-recaptcha";
-import ReCAPTCHA from "react-google-recaptcha";
+// import ReCAPTCHA from "react-google-recaptcha";
 
 import { Input,ButtonInput } from 'react-bootstrap';
 
@@ -51,7 +51,8 @@ export default class Signup extends BaseComponent {
   }
 
   static renderServerScripts(){
-    return <script src="https://www.google.com/recaptcha/api.js" async defer></script>;
+    return null;
+    // return <script src="https://www.google.com/recaptcha/api.js" async defer></script>;
   }
 }
 
