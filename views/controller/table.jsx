@@ -10,38 +10,21 @@ import BaseComponent from './../components/BaseComponent.jsx';
 import cx from 'classnames';
 import CommentHelper from './../helpers/comment.jsx';
 
+import Util from '../helpers/util';
 
 export default class TableView extends BaseComponent {
 
   constructor(props) {
     super(props);
 
-    if(global.window != null && this.props.budget_links.length > 0){
-      var datas = [$.get(this.props.budget_links[0])];
-      if(this.props.budget_links.length > 1){
-        datas.push($.get(this.props.budget_links[1]));
-      }
-      $.when.apply($,datas).
-        then((args,arg2) =>{
+    if(global.window != null){
 
-        if(typeof res =="string"){
-          res = JSON.parse(res);
-        }
-        var res = null;
-        var res2 = null;
-        if(arguments.length == 2){
-          res = args;
-          res2 = null;
-        }else{
-          res = args[0];
-          res2 = args[1];
-        }
-
-        if(res2 != null){
+      Util.requestJSONs(this.props.budget_links).then((datas)=>{
+        var res = datas[0];
+        if(res.length && datas.length > 1 && res[0].last_amount == null){
           var map = {};
-          res2.forEach((r) =>{
-            map[r.code] = parseInt(r.amount,10);
-          });
+          datas[1].forEach((data)=>{ map[data.code] = data.amount });
+
           res.forEach((r) => {
             r.last_amount = parseInt(map[r.code] || 0,10);
             r.change = parseInt(r.amount,10) - parseInt(r.last_amount,10) ;
@@ -50,14 +33,16 @@ export default class TableView extends BaseComponent {
         }else{
           res.forEach((r) => {
             r.change = parseInt(r.amount,10) - parseInt(r.last_amount,10) ;
-            r.comment =  CommentHelper.refine(r.comment);
+            r.comment = CommentHelper.refine(r.comment);
           });
         }
+
         this.setState({
           last_budget:res,
           waiting:false
         });
       });
+      
     }
 
     this.state = {
