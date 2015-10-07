@@ -29,7 +29,12 @@ class BudgetTableRow extends BaseComponent {
   // shouldComponentUpdate(){
   //   return false;
   // }
-
+  _code(code){
+    if(code.indexOf("-") == -1){
+      return code;
+    }
+    return code.split("-")[1];
+  }
 
   render(){
     var b = this.props.item;
@@ -37,7 +42,7 @@ class BudgetTableRow extends BaseComponent {
       <tbody stlye={{display: this.props.show? '':'none'}}>
         <tr>
           <td>{b.year}</td>
-          <td>{b.code.split("-")[1]}</td>
+          <td>{this._code(b.code)}</td>
           <td>{b.topname}</td>
           <td>{b.depname}</td>
           <td>{b.category}</td>

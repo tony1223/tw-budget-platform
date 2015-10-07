@@ -265,7 +265,7 @@ export default class D3BudgetBubble1 extends BaseComponent {
         .on("tick", tick);
     force.start();
     var safe = 0;
-    while(force.alpha() > 0.02){
+    while(force.alpha() > 0.01){
       force.tick();
       safe ++;
       if(safe > 1000){
