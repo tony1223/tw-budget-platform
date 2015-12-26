@@ -114,6 +114,24 @@ router.get('/table/:id/:type?', function(req, res, next) {
 });
 
 
+
+
+router.get('/upload', function(req, res, next) {
+  res.render('dispatch.jsx', 
+  { 
+    comp:'upload',
+    layout:'default',
+    nav:"upload",
+    pageInfo:{
+      title:"預算視覺化平台"
+    },
+    views:{
+    }
+  });
+
+});
+
+
 module.exports = router;
 
 

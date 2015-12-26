@@ -20,11 +20,11 @@ export default class FrontLayout extends React.Component {
 
 
     var items = [
-      // { 
-      //   key:"/user/signup",
-      //   url:"/user/signup",
-      //   label:"上傳新的預算書"
-      // }
+      { 
+        key:"/upload",
+        url:"/upload",
+        label:"上傳新的預算書"
+      }
     ];
 
  return ( 

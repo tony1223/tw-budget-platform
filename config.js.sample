@@ -8,6 +8,10 @@ export default {
     password: ''
   },
   salt:"xxxxxx",
-  session_secret:'xxxxxxxx'
+  session_secret:'xxxxxxxx',
+  aws:{
+    access:"",
+    token:"", 
+  }
 };
 
