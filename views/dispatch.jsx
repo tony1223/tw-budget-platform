@@ -8,7 +8,7 @@ var ReactDOMServer = require('react-dom/server');
 
 export default class Dispatcher extends React.Component {
   render() {
-  	var comp = require("./controller/"+this.props.comp+".jsx");
+  	var comp = require("./controller/"+this.props.comp+".jsx").default;
     var props = this.props.renders;
     if(props == null){
       props = this.props.views;
