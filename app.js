@@ -15,6 +15,7 @@ var user = require('./routes/user');
 
 var app = express();
 
+
 // livereload = require('express-livereload');
 // livereload(app, {watchDir:process.cwd() + "/views"});
 

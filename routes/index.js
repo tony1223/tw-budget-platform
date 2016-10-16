@@ -5,6 +5,12 @@ var router = express.Router();
 
 import BudgetModel from '../model/budgetmodel.jsx';
 
+import config from "../config.js";
+
+var fs = require("fs");
+
+var multer  = require('multer');
+var upload = multer({ dest: '/tmp/' });
 
 // var db = {
 //   getData:function(id){
@@ -61,7 +67,8 @@ router.get('/drilldown/:id', function(req, res, next) {
       pageInfo:data,
       views:{
         budget_links:data.budgets,
-        budget_id:data.id
+        budget_id:data.id,
+        budget_file_type:data.budget_file_type
       }
     });
   });
@@ -80,7 +87,8 @@ router.get('/bubble/:id', function(req, res, next) {
       pageInfo:data,
       views:{
         budget_links:data.budgets,
-        budget_id:data.id
+        budget_id:data.id,
+        budget_file_type:data.budget_file_type
       }
     });
   });
@@ -107,7 +115,8 @@ router.get('/table/:id/:type?', function(req, res, next) {
       views:{
         _subnav:req.params.type || 'all',
         budget_links:data.budgets,
-        budget_id:data.id
+        budget_id:data.id,
+        budget_file_type:data.budget_file_type
       }
     });
   });
@@ -129,6 +138,24 @@ router.get('/upload', function(req, res, next) {
     }
   });
 
+});
+
+
+
+router.post('/uploading', upload.single('file'), function(req, res, next) {
+  console.log(req.file);
+// { fieldname: 'file',
+//   originalname: 'testbudget.csv',
+//   encoding: '7bit',
+//   mimetype: 'text/csv',
+//   destination: '/tmp/',
+//   filename: '50409340425fbf2c839cfbd03da84463',
+//   path: '/tmp/50409340425fbf2c839cfbd03da84463',
+//   size: 38961 }
+  var content = fs.readFileSync(req.file.path).toString();
+
+  console.log(content);
+  
 });
 
 

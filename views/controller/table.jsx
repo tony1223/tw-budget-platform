@@ -19,24 +19,7 @@ export default class TableView extends BaseComponent {
 
     if(global.window != null){
 
-      Util.requestJSONs(this.props.budget_links).then((datas)=>{
-        var res = datas[0];
-        if(res.length && datas.length > 1 && res[0].last_amount == null){
-          var map = {};
-          datas[1].forEach((data)=>{ map[data.code] = data.amount });
-
-          res.forEach((r) => {
-            r.last_amount = parseInt(map[r.code] || 0,10);
-            r.change = parseInt(r.amount,10) - parseInt(r.last_amount,10) ;
-            r.comment = CommentHelper.refine(r.comment);
-          });
-        }else{
-          res.forEach((r) => {
-            r.change = parseInt(r.amount,10) - parseInt(r.last_amount,10) ;
-            r.comment = CommentHelper.refine(r.comment);
-          });
-        }
-
+      Util.getBudgetInfos(this.props.budget_file_type,this.props.budget_links).then((res)=>{
         this.setState({
           last_budget:res,
           waiting:false

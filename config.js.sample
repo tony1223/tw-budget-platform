@@ -9,9 +9,11 @@ export default {
   },
   salt:"xxxxxx",
   session_secret:'xxxxxxxx',
-  aws:{
+  aws:{ //use to store budget files
     access:"",
     token:"", 
+    bucket:"",
+    region:""
   }
 };
 

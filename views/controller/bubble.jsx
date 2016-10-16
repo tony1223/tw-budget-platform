@@ -8,6 +8,8 @@ import D3BudgetBubble from './../components/d3BudgetBubble.jsx';
 import CommentHelper from './../helpers/comment.jsx';
 import Loading from './../components/Loading.jsx';
 import FBComment from './../components/fb/FBComment.jsx';
+var ReactDisqusThread = require('react-disqus-thread');
+
 
 import Util from '../helpers/util';
 
@@ -22,25 +24,7 @@ export default class Bubble extends BaseComponent {
     };
 
     if(global.window != null){
-
-      Util.requestJSONs(this.props.budget_links).then((datas)=>{
-        var res = datas[0];
-        if(res.length && datas.length > 1 && res[0].last_amount == null){
-          var map = {};
-          datas[1].forEach((data)=>{ map[data.code] = data.amount });
-
-          res.forEach((r) => {
-            r.last_amount = parseInt(map[r.code] || 0,10);
-            r.change = parseInt(r.amount,10) - parseInt(r.last_amount,10) ;
-            r.comment = CommentHelper.refine(r.comment);
-          });
-        }else{
-          res.forEach((r) => {
-            r.change = parseInt(r.amount,10) - parseInt(r.last_amount,10) ;
-            r.comment = CommentHelper.refine(r.comment);
-          });
-        }
-
+      Util.getBudgetInfos(this.props.budget_file_type,this.props.budget_links).then((res)=>{
         this.setState({
           last_budget:res,
           waiting:false
@@ -88,6 +72,24 @@ export default class Bubble extends BaseComponent {
     // var {data,selectedDrill} = this.state;
     // var {drilldown} = data;
     var {selectedBudget,infoBudget} = this.state;
+
+    var budgetComments = null;
+    if(selectedBudget){    
+      if(this.props.budget_id == 1){
+        budgetComments = <FBComment href={"http://tpebudget.tonyq.org/budget/"+infoBudget.code} />;
+      }else if(this.props.budget_id <= 6){
+        budgetComments = <FBComment href={"http://budget.tonyq.org/bubble/"+this.props.budget_id+"/"+infoBudget.code} />
+      }else{
+        budgetComments = <ReactDisqusThread
+                shortname="budget.tonyq.org"
+                identifier={this.props.budget_id+"/"+infoBudget.code}
+                title=""
+                url={"http://budget.tonyq.org/bubble/"+this.props.budget_id+"/"+infoBudget.code}
+                category_id=""
+                onNewComment={this.handleNewComment } />;
+      }
+    } 
+
     return (
       <div className='row'>
         <div className='col-xs-12'>
@@ -146,9 +148,7 @@ export default class Bubble extends BaseComponent {
               <hr />
               <div className='col-md-12'>
                 {
-                  this.props.budget_id == 1 ?
-                    <FBComment href={"http://tpebudget.tonyq.org/budget/"+infoBudget.code} />
-                  : <FBComment href={"http://budget.tonyq.org/bubble/"+this.props.budget_id+"/"+infoBudget.code} />
+                  budgetComments
                 }
               </div>
             </div>}
