@@ -37,6 +37,7 @@
     "react-bootstrap": "^0.25.2",
     "react-d3": "^0.4.0",
     "react-disqus-thread": "^0.4.0",
+    "react-dom": "^15.3.2",
     "react-hot-loader": "^1.2.7",
     "react-paginate": "^0.1.29",
     "react-proxy-loader": "^0.3.4",
