@@ -1,5 +1,6 @@
 
 import React from "react";
+var ReactDOMServer = require('react-dom/server');
 
 // <DefaultLayout title={this.props.title} name={this.props.name}>
 //       </DefaultLayout>
@@ -22,7 +23,7 @@ export default class Dispatcher extends React.Component {
 
     var render = function(comp,props){
       var datas = JSON.stringify(props);
-      var childs = React.renderToString(React.createElement(comp,props)) +
+      var childs = ReactDOMServer.renderToString(React.createElement(comp,props)) +
         "<script> window.react_data = "+datas+" </script> ";
       return childs;
     };
