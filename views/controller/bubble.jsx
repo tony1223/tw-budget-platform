@@ -81,7 +81,7 @@ export default class Bubble extends BaseComponent {
         budgetComments = <FBComment href={"http://budget.tonyq.org/bubble/"+this.props.budget_id+"/"+infoBudget.code} />
       }else{
         budgetComments = <ReactDisqusThread
-                shortname="budget.tonyq.org"
+                shortname="budget-tonyq-org"
                 identifier={this.props.budget_id+"/"+infoBudget.code}
                 title=""
                 url={"http://budget.tonyq.org/bubble/"+this.props.budget_id+"/"+infoBudget.code}
