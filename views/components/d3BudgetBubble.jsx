@@ -93,7 +93,7 @@ export default class D3BudgetBubble1 extends BaseComponent {
     var nodes = this.props.items;
     var clusters = this.getCenters(nodes,this.props.groupKey);
 
-    var grid_height = Math.max(400,d3.max(Object.keys(clusters),
+    var grid_height = Math.max(500,d3.max(Object.keys(clusters),
       (c)=> (clusters[c].items) / 10) * 20);
     var grid_width = Math.min(width,250); 
 

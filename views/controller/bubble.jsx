@@ -94,7 +94,7 @@ export default class Bubble extends BaseComponent {
       <div className='row'>
         <div className='col-xs-12'>
           {this.state.last_budget && 
-            <div className='col-xs-12 col-md-12'>
+            <div className='col-xs-12 col-md-12' style={{"margin-bottom":"200px"}}>
               <D3BudgetBubble onBudgetOver={this.onBudgetOver.bind(this)}
                 onBudgetClick={this.onBudgetClick.bind(this)} groupKey="topname" items={this.state.last_budget} />
             </div>

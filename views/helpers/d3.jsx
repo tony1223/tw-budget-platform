@@ -4,8 +4,8 @@ export default {
   getChangeColorScale(){
 
     // var colors = ['black','#C51B7D', '#DE77AE', '#F1B6DA', '#FDE0EF', 'gray', '#B8E186', '#7FBC41', '#4D9221'];
-    var color_domain = [-1, -0.25, -0.1, -0.02, 0, 0.02, 0.1, 0.25];
-    var colors = ["black", "#C51B7D", '#DE77AE', '#F1B6DA', '#FDE0EF', "#E6F5D0", "#B8E186" , "#7FBC41", '#4D9221'];
+    var color_domain = [-1, -0.99, -0.25, -0.1, -0.02, 0, 0.02, 0.1, 0.25];
+    var colors = ["black", "#C51B7D", "#C51B7D", '#DE77AE', '#F1B6DA', '#FDE0EF', "#E6F5D0", "#B8E186" , "#7FBC41", '#4D9221'];
 
     return d3.scale.quantile().domain(color_domain)
       .range(colors);
@@ -14,8 +14,13 @@ export default {
   _drawScaleReference(svg){
 
     // var colors = ['black','#C51B7D', '#DE77AE', '#F1B6DA', '#FDE0EF', 'gray', '#B8E186', '#7FBC41', '#4D9221'];
+    var color_domain = [-1, -0.25, -0.1, -0.02, 0, 0.02, 0.1, 0.25];
+    var colors = ["black", "#C51B7D", '#DE77AE', '#F1B6DA', '#FDE0EF', "#E6F5D0", "#B8E186" , "#7FBC41", '#4D9221'];
 
-    var colorScale = this.getChangeColorScale();
+
+    // var colorScale = this.getChangeColorScale();
+    var colorScale = d3.scale.quantile().domain(color_domain)
+      .range(colors);
 
     var xColorScale = d3.scale.ordinal().rangeRoundBands([200, 0], 0.1).domain(colorScale.domain());
     // var yColorScale = d3.scale.ordinal().rangeRoundBands([200, 0], 0.1).domain(colors);      
