@@ -18,7 +18,7 @@
     "excerpt": "0.0.1",
     "express": "^4.13.3",
     "express-livereload": "0.0.24",
-    "express-react-views": "^0.8.2",
+    "express-react-views": "^0.10.2",
     "express-session": "^1.11.3",
     "generic-pool": "^2.2.0",
     "http-auth": "^2.2.8",
