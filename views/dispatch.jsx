@@ -30,9 +30,9 @@ export default class Dispatcher extends React.Component {
 
   	var DefaultLayout = null;
   	if(this.props.layout == null){
-  		DefaultLayout = require('./layouts/default.jsx');
+  		DefaultLayout = require('./layouts/default.jsx').default;
   	}else{
-  		DefaultLayout = require('./layouts/'+this.props.layout+'.jsx');
+  		DefaultLayout = require('./layouts/'+this.props.layout+'.jsx').default;
   	}
 
     var childs = null;
