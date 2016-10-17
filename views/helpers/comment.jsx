@@ -14,6 +14,7 @@ export default {
     html = html.replace(/減列/gi, (str) => { return  "<span style='color:pink;'>"+str+"</span>"  });
     html = html.replace(/[0-9,]+[ ]?[千]元/gi, this._refine_amount)
     html = html.replace(/上年度預算數/gi, (str) => { return "<b>"+str+"</b>"} );
+    html = html.replace(/<#H([0-9]+)>/gi, (str,num) => {return "<br />"+(num=="2"?"&nbsp;&nbsp;&nbsp;&nbsp;":"") });
     return html;
   },
   //TODO:review XSS issue

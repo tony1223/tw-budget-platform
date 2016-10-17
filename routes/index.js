@@ -92,7 +92,26 @@ router.get('/bubble/:id', function(req, res, next) {
       }
     });
   });
+});
 
+
+router.get('/bubble-test', function(req, res, next) {
+  var budget = req.query.file;
+  var budget_type = req.query.type || 0;
+
+  res.render('dispatch.jsx', 
+  { 
+    comp:'bubble',
+    layout:'front',
+    nav:"home",
+    budget_id:-1,
+    pageInfo:{},
+    views:{
+      budget_links:[budget],
+      budget_id:-1,
+      budget_file_type:budget_type
+    }
+  });
 });
 
 
