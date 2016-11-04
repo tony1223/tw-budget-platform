@@ -3,7 +3,16 @@ import Promise from 'promise';
 var express = require('express');
 var router = express.Router();
 
-import BudgetModel from '../model/budgetmodel.jsx';
+import Config from "../config";
+
+
+var BudgetModel = null,_BudgetModel= null,_BudgetFileModel = null;
+if(!Config.file_model){
+  _BudgetModel = require('../model/budgetmodel.jsx');
+}else{
+  _BudgetFileModel = require('../model/budgetfilemodel.jsx');
+}
+BudgetModel = Config.file_model ? _BudgetFileModel : _BudgetModel;
 
 import config from "../config.js";
 

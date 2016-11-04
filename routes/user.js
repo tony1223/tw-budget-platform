@@ -3,7 +3,6 @@ var router = express.Router();
 
 import UserModel from '../model/usermodel.jsx';
 
-
 router.get('/signup', function(req, res, next) {
 
   res.render('dispatch.jsx', 

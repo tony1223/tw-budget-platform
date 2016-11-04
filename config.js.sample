@@ -7,8 +7,9 @@ export default {
     user: 'root',
     password: ''
   },
-  salt:"xxxxxx",
-  session_secret:'xxxxxxxx',
+  salt:"xxx3rxdsrfs",
+  session_secret:'kkkkkkDdasd3',
+  file_model:false,
   aws:{ //use to store budget files
     access:"",
     token:"", 
