@@ -21,25 +21,6 @@ var fs = require("fs");
 var multer  = require('multer');
 var upload = multer({ dest: '/tmp/' });
 
-// var db = {
-//   getData:function(id){
-//     if(id == 3 ){
-//       var data = {};
-//       data.id = 3;
-//       data.unit ='台北市';
-//       data.title = data.unit + ' 2016 總預算';
-//       data.ogimage ='http://tpebudget.tonyq.org/img/ogimage.png';
-//       data.description = '快來瞭解台北市 2016 年預算類型、內容！';
-
-//       data.budgets = [ // first is latest
-//         "https://cdn.rawgit.com/tony1223/6a3bee53b175b2d4429f/raw/5e6cffa9d2d6bed87401156c66d3424952a7bf9e/gistfile1.txt",
-//         "https://api.myjson.com/bins/1vyte"
-//       ];
-//       return Promise.resolve(data);
-//     }
-//     return Promise.resolve(null);
-//   }
-// }
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -67,6 +48,7 @@ router.get('/', function(req, res, next) {
 router.get('/drilldown/:id', function(req, res, next) {
   var budget = req.params.id;
   BudgetModel.get(budget).then(function(data){
+    console.log(data);    
     res.render('dispatch.jsx', 
     { 
       comp:'drilldown',
@@ -77,7 +59,8 @@ router.get('/drilldown/:id', function(req, res, next) {
       views:{
         budget_links:data.budgets,
         budget_id:data.id,
-        budget_file_type:data.budget_file_type
+        budget_file_type:data.budget_file_type,
+        budget_meta_links:data.meta_links
       }
     });
   });
@@ -97,7 +80,8 @@ router.get('/bubble/:id', function(req, res, next) {
       views:{
         budget_links:data.budgets,
         budget_id:data.id,
-        budget_file_type:data.budget_file_type
+        budget_file_type:data.budget_file_type,
+        budget_meta_links:data.budget_meta_links
       }
     });
   });
@@ -126,7 +110,7 @@ router.get('/bubble-test', function(req, res, next) {
 
 router.get('/table/:id/:type?', function(req, res, next) {
   var budget = req.params.id;
-  console.log("type",req.params.type);
+  // console.log("type",req.params.type);
 
   var allowType = {'all':1,'topname':1,'depname':1,'category':1};
   if(req.params.type != null && allowType[req.params.type] == null){
@@ -144,7 +128,8 @@ router.get('/table/:id/:type?', function(req, res, next) {
         _subnav:req.params.type || 'all',
         budget_links:data.budgets,
         budget_id:data.id,
-        budget_file_type:data.budget_file_type
+        budget_file_type:data.budget_file_type,
+        budget_meta_links:data.meta_links
       }
     });
   });

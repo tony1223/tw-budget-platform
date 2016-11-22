@@ -60,7 +60,9 @@ export default class D3BudgetTreeMap{
         .attr("y", 6 - margin.top)
         .attr("dy", ".75em");
 
-    grandparent.on("mouseover", this.onOver.bind(this,state.root));
+    grandparent.on("mouseover", ()=>{
+      this.onOver(this.currentDrill || state.root);
+    });
 
     this.update(el, state);
   }
@@ -78,7 +80,6 @@ export default class D3BudgetTreeMap{
     var root = state.root;
 
     this.root = root;
-  
     var x = d3.scale.linear()
         .domain([0, width])
         .range([0, width]);
@@ -101,9 +102,16 @@ export default class D3BudgetTreeMap{
     // if children exist , sum all children value
     if(d._children = d.children){
         return d.value = d.children.reduce((p, v) => { 
-          return p + this._accumulate(v); 
+          var val = this._accumulate(v);
+          if(isNaN(val)){
+            return p;
+          }
+          return p + val 
         }, 0);
     }else{
+      if(isNaN(d.value)){
+        return 0;
+      }
       return d.value;
     }
   }
@@ -113,8 +121,14 @@ export default class D3BudgetTreeMap{
     return true;
   }
 
-  _display(grandparent,d) {
+  onSelect(d){
+    this.currentDrill = d;
+    this.props.onSelect && this.props.onSelect(d);
+    return true;
+  }
 
+  _display(grandparent,d) {
+    this.curret_drill = d;
     var formatNumber = d3.format(",d");
 
     var g1 = this.svg.insert("g", ".grandparent")
@@ -123,7 +137,10 @@ export default class D3BudgetTreeMap{
 
     grandparent
         .datum(d.parent)
-        .on("click", this._transition.bind(this,g1))
+        .on("click", (d) => {
+          this.onSelect(d);
+          this._transition(g1,d);
+        })
       .select("text")
         .text(this._name(d));
 
@@ -134,14 +151,17 @@ export default class D3BudgetTreeMap{
     g.filter(function(d) { return d._children; })
         .classed("children", true)
         .on("click", (d) => {
+          this.onSelect(d);          
           this._transition(g1,d);
           this.onOver(d);
         })
         .on("mouseover", this.onOver.bind(this))
+        .on("mouseout",this.onOver.bind(this,[this.currentDrill]));
 
     g.selectAll(".child")
         .data(function(d) { return d._children || [d]; })
-      .enter().append("rect")
+      .enter()
+      .append("rect")
         .attr("class", "child")
         .call(this._rect.bind(this));
 
@@ -151,21 +171,38 @@ export default class D3BudgetTreeMap{
       .append("title")
         .text(function(d) { return formatNumber(d.value); });
 
+
     g.append("text")
         .attr("dy", ".75em")
-        .text(function(d) { return d.name; })
+        .text((d) =>{ 
+          var {x,y} = this.scales;   
+          if((x(d.x + d.dx) - x(d.x) ) < 100 ){
+            return "";
+          }
+          return d.name.replace(/[ \t\n\r]+/,""); 
+        })
         .call(this._text.bind(this));
 
     g.append("text")
         .attr("dy", "1.95em")
         .text((d) => { 
+          var {x,y} = this.scales;   
+          if((x(d.x + d.dx) - x(d.x) ) < 100 ){
+            return "";
+          }
           return unitconverter.convert(d.value,null) ; 
         })
         .call(this._text.bind(this));
         
     g.append("text")
-        .attr("dy", "3.15em")
+        .attr("dy",(d)=>{
+          return "3.15em";
+        } )
         .text((d) => { 
+          var {x,y} = this.scales;   
+          if((x(d.x + d.dx) - x(d.x) ) < 50 ){
+            return "";
+          }
           return ""+ (parseInt((d.value / this.root.value )* 10000,10)/100) +"%";; 
         })
         .call(this._text.bind(this));

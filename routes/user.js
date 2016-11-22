@@ -19,21 +19,19 @@ router.get('/signup', function(req, res, next) {
 });
 
 
-
 router.post('/signuping', function(req, res, next) {
   var account = req.body.account ;
   var pwd = req.body.account ;
 
-  console.log(req.body);
   if(account == null || pwd == null || account.trim() =="" || pwd.trim() == ""){
     res.send({ok:false,errorMessage:"帳號或密碼為空"});
     return true;
   }
 
-  UserModel.get(account,pwd).then((u)=>{
+  UserModel.checkAccount(account).then((u)=>{
     if(u != null){
-      req.session._u = u;
-      res.send({ok:true,u:u});
+      // req.session._u = u;
+      res.send({ok:false,errorMessage:"使用者已存在"});
       return true;
     }
 
@@ -48,11 +46,24 @@ router.post('/signuping', function(req, res, next) {
       res.send({ok:false,errorMessage:"未知的錯誤"});
       
     });
-  })
+  });
 
 });
 
 
+router.get('/login', function(req, res, next) {
 
+  res.render('dispatch.jsx', 
+  { 
+    comp:'user/login',
+    layout:'default',
+    nav:"home",
+    pageInfo:{
+      title:"預算視覺化產生器 - 登入"
+    },
+    views:{
+    }
+  });
 
+});
 module.exports = router;

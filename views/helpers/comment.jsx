@@ -19,12 +19,15 @@ export default {
   },
   //TODO:review XSS issue
   _refine_amount(str){
-    var amount = parseInt(str.replace(/[,千元]/gi,""),10);
-
-    if(str.indexOf("千元") != -1){
-      amount = amount * 1000;
+    var amount = 0;
+    if(str.replace){
+      amount = parseInt(str.replace(/[,千元]/gi,""),10);
+      if(str.indexOf("千元") != -1){
+        amount = amount * 1000;
+      }      
+    }else{
+      amount = str;
     }
-    
 
     if(amount > 1000000){
         return " <b >" + str + 

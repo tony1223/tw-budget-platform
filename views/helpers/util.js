@@ -68,7 +68,7 @@ var util = {
   requestJSONs(urls){
 
     if(global.window){
-      if(urls == null){
+      if(urls == null || ! urls.length ){
         return Promise.resolve([]);
       }
       var promises = urls.map((url)=>{
@@ -163,6 +163,9 @@ var util = {
   parseFormalNumbers(num){
     return parseInt(num.replace(/,/g,""),10);
   },
+  refine_amount(num){
+    return CommentHelper._refine_amount(num);
+  },
   getBudgetInfos_v1_header_csv(budget_file_type,budget_links){
 
     var map = {};
@@ -204,7 +207,29 @@ var util = {
       return result;
     }).then((items) => items.filter(n=>n!=null));
   },
+  process_meta_link:function(meta_links){
+    if(meta_links == null){
+      return Promise.resolve({});
+    }
+
+    var results = {};
+    var promises = Object.keys(meta_links).map((key) =>{
+      return this.requestJSONs([meta_links[key]]).then(([data])=>{
+        if(key == "purpose"){ //用途別
+          data.Root.Row.forEach(function(item){
+            results[item["預算科目編號"]] = results[item["預算科目編號"]]||{};
+            results[item["預算科目編號"]]["purpose"] = item;
+          });
+        }
+      });
+    });
+    return Promise.all(promises).then(function(){
+      return results;
+    });
+  },
   getBudgetInfos(budget_file_type,budget_links){
+
+
     if(budget_file_type =="1"){
       return this.getBudgetInfos_v1_header_csv(budget_file_type,budget_links);
     }

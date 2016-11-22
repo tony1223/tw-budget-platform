@@ -18,6 +18,15 @@ class UserModel{
       // db.queryResult
     });
   }
+  checkAccount(account){
+    return pg.then(function([db,queryResult]){
+      return db.query("select * from \"user\" where account = ${account} ",
+        {
+          account:account,
+        },queryResult.ONE);
+      // db.queryResult
+    });
+  }
   get(account,pwd){
     return pg.then(function([db,queryResult]){
       return db.query("select * from \"user\" where account = ${account} and pwd = ${pwd} ",

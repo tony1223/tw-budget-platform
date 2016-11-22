@@ -13,6 +13,7 @@ export default class Dispatcher extends React.Component {
     if(props == null){
       props = this.props.views;
     }
+    console.log("views",this.props.views);
    //  var skiped = {"settings":1,"comp":1,"setting":1,"cache":1,"_locals":1,"render":1};
   	// for(var k in this.props){
    //    if(skiped[k] === 1){

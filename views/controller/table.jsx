@@ -18,14 +18,19 @@ export default class TableView extends BaseComponent {
     super(props);
 
     if(global.window != null){
-
-      Util.getBudgetInfos(this.props.budget_file_type,this.props.budget_links).then((res)=>{
+      Promise.all(
+        [
+          Util.getBudgetInfos(
+            this.props.budget_file_type,
+            this.props.budget_links),
+          Util.process_meta_link(this.props.budget_meta_links)
+        ]).then(([res,meta])=>{
         this.setState({
           last_budget:res,
-          waiting:false
+          waiting:false,
+          codeMetas:meta
         });
       });
-      
     }
 
     this.state = {
@@ -43,8 +48,9 @@ export default class TableView extends BaseComponent {
     return false;
   }
 
+
   render(){
-    var {last_budget} = this.state;
+    var {last_budget,codeMetas} = this.state;
     // var {drilldown} = data;
 
     var keysMap = {
@@ -80,7 +86,7 @@ export default class TableView extends BaseComponent {
         </ul>
         {this.state._subnav == 'all' && <div style={{padding:"15px"}} className={cx({row:1})}>
           <br />
-          <BudgetTable waiting={this.state.waiting}  items={last_budget} />  
+          <BudgetTable codeMetas={codeMetas} waiting={this.state.waiting}  items={last_budget} />  
         </div>}
         {
           this.state._subnav != 'all' && <div style={{padding:"15px"}} className={cx({row:1,hidden:this.state._subnav == 'all'})}>

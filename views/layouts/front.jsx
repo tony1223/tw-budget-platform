@@ -18,7 +18,6 @@ export default class FrontLayout extends React.Component {
      "   ga('create', 'UA-67265163-1', 'auto', {'name': 'newTracker'}); "+
      "   ga('newTracker.send', 'pageview'); ";    
 
-     console.log(this.props);
     var items = [
       { 
         key:"/drilldown/",

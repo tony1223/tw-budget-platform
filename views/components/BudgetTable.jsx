@@ -5,6 +5,7 @@ import cx from 'classnames';
 
 import BaseComponent from './BaseComponent.jsx';
 import Loading from './Loading.jsx';
+import Util from '../helpers/util';
 
 
 class BudgetTableRow extends BaseComponent {
@@ -36,8 +37,52 @@ class BudgetTableRow extends BaseComponent {
     return code.split("-")[1];
   }
 
+
+  _find_meta_details(){
+    if(this.props.codeMetas == null){
+      return null;
+    }
+    
+    var codeMetas = this.props.codeMetas;
+
+    var metas = codeMetas[this.props.item.code] && codeMetas[this.props.item.code]["purpose"];
+    if(!metas){
+      return null;
+    }
+    var ignorefield=["款","項","目","節","科目名稱","預算科目編號"];
+    ignorefield.forEach((key)=>{
+      if(metas[key]){
+        delete metas[key];
+      }
+    });
+
+    var sortnum = function(name){
+      if(name.indexOf("_資") != -1){
+        return 2;
+      }
+      if(name.indexOf("_經") != -1){
+        return 3;
+      }
+      if(name.indexOf("小計") != -1){
+        return 4;
+      }
+      if(name.indexOf("合計") != -1){
+        return 5;
+      }
+      return 1;
+    };
+    var okeys = Object.keys(metas).sort(function(n1,n2){
+      return sortnum(n1) - sortnum(n2);
+    });
+
+    return okeys.map((key)=>{
+      return {name:key,value:metas[key] * 1000};
+    }).filter(k=>k.value > 0);
+  }
+
   render(){
     var b = this.props.item;
+    var meta_purpose_info = this._find_meta_details();
     return (
       <tbody stlye={{display: this.props.show? '':'none'}}>
         <tr>
@@ -59,9 +104,26 @@ class BudgetTableRow extends BaseComponent {
         </tr>
         <tr style={{display:this.state.open ?"":"none" }} >
           <td></td>
-          <td colSpan={9} dangerouslySetInnerHTML={{__html:b.comment}}>
+          <td colSpan={9} dangerouslySetInnerHTML={{__html:
+            b.comment
+          }}>
           </td>
+
         </tr>
+        { meta_purpose_info && (
+          <tr style={{display:this.state.open ?"":"none" }} >
+            <td></td>
+            <td colSpan={9} >
+              {meta_purpose_info.map((data)=><div>
+                  <p>{data.name}: 
+                    
+                    <span dangerouslySetInnerHTML={{__html:Util.refine_amount(data.value)}}>
+                    </span>
+                  </p>
+                </div>)}
+            </td>
+          </tr>
+        )}
       </tbody>
 
     );
@@ -95,23 +157,37 @@ export default class BudgetTable extends BaseComponent {
 
   render(){
     var {search,sort,sortAsc} = this.state;
-    var items = this.props.items;
+    var _items = this.props.items || [];
+    var items = _items;
+    var steps = ["topname","depname","category","name"];
 
+    var filter = this.props.filter;
+    if(filter){
+      items = [];
+      _items.forEach((item)=>{ 
+        var matchs = steps.filter((key,ind) =>{
+          if(ind >= filter.length){ return true; }
+          if(item[key] == filter[ind]){
+            return true;
+          }else{
+            return false;
+          }
+        });
+        if(matchs.length == steps.length ){
+          items.push(item);
+        }
+      });
+    }
     var hide = {};
 
     if(search != null && $.trim(search) != ""){
       let newitems = [];
       items.forEach((item)=>{ 
-        if(item.topname.indexOf(search) != -1){
-          newitems.push(item);
-        }else if(item.depname.indexOf(search) != -1){
-          newitems.push(item);
-        }else if(item.category.indexOf(search) != -1){
-          newitems.push(item);
-        }else if(item.name.indexOf(search) != -1){
+        var matchs = steps.filter((key) => item[key].indexOf(search) != -1);
+        if(matchs.length > 0 ){
           newitems.push(item);
         }else{
-          hide[item.code];
+          hide[item.code] = 1;
         }
       });
       items = newitems;
@@ -167,12 +243,12 @@ export default class BudgetTable extends BaseComponent {
               <tr><td colSpan={9}><Loading /></td></tr>
           }
           { !(this.props.waiting || this.state._waiting ) && items && items.map((b)=>{
-            return <BudgetTableRow show={!!!hide[b.code]} item={b} key={b.code} /> 
+            return <BudgetTableRow codeMetas={this.props.codeMetas} show={!!!hide[b.code]} item={b} key={b.code} /> 
           })}
         </table>
       </div>
     );
-    console.log("used:"+(new Date().getTime()-s));
+    // console.log("used:"+(new Date().getTime()-s));
     return h;
   }
 }
