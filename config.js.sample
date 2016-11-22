@@ -9,12 +9,6 @@ export default {
   },
   salt:"xxx3rxdsrfs",
   session_secret:'kkkkkkDdasd3',
-  file_model:false,
-  aws:{ //use to store budget files
-    access:"",
-    token:"", 
-    bucket:"",
-    region:""
-  }
+  file_model:false
 };
 
