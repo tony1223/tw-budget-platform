@@ -10,7 +10,7 @@ import Loading from './../components/Loading.jsx';
 import FBComment from './../components/fb/FBComment.jsx';
 var ReactDisqusThread = require('react-disqus-thread');
 
-
+import cx from 'classnames';
 import Util from '../helpers/util';
 
 import BaseComponent from './../components/BaseComponent.jsx';
@@ -20,13 +20,29 @@ export default class Bubble extends BaseComponent {
     super(props);
     this.state = {
       infoBudget:null,
-      selectedBudget:null
+      selectedBudget:null,
+      groupKey:"topname"
     };
 
     if(global.window != null){
-      Util.getBudgetInfos(this.props.budget_file_type,this.props.budget_links).then((res)=>{
+      Promise.all([
+        Util.getBudgetInfos(this.props.budget_file_type,this.props.budget_links),
+        Util.process_gov_type(this.props.budget_meta_links)
+      ]).then(([res,gov_types])=>{
+        var last_res = res;
+        if(gov_types){
+          var typeMap = {};
+          gov_types.forEach(function(type){
+            typeMap[type["代碼"]] = type["名稱"];
+          });
+          last_res = res.map((r)=>{
+            var gov_key = $.trim(r.code).substring(0,2);
+            r.gov_type = typeMap[gov_key];
+            return r;
+          });
+        }
         this.setState({
-          last_budget:res,
+          last_budget:last_res,
           waiting:false
         });
       });
@@ -56,6 +72,10 @@ export default class Bubble extends BaseComponent {
   onBudgetOver(d,cluster){
     this.setState({infoBudget:d});
     // console.log(d,cluster);
+  }
+
+  onChangeGroupKey(type){
+    this.setState({groupKey:type});
   }
 
 
@@ -95,8 +115,13 @@ export default class Bubble extends BaseComponent {
         <div className='col-xs-12'>
           {this.state.last_budget && 
             <div className='col-xs-12 col-md-12' style={{"margin-bottom":"200px"}}>
+              <div class="btn-group" role="group" aria-label="機關政事別切換">
+                <button onClick={this.onChangeGroupKey.bind(this,"topname")} type="button" className={cx({"btn":true,"btn-default":true,"btn-primary":this.state.groupKey == "topname"})}>機關別</button>
+                {this.state.last_budget && this.state.last_budget[0].gov_type &&
+                    (<button onClick={this.onChangeGroupKey.bind(this,"gov_type")} type="button" className={cx({"btn":true,"btn-default":true,"btn-primary":this.state.groupKey == "gov_type"})}>政事別</button>)}
+              </div>
               <D3BudgetBubble onBudgetOver={this.onBudgetOver.bind(this)}
-                onBudgetClick={this.onBudgetClick.bind(this)} groupKey="topname" items={this.state.last_budget} />
+                onBudgetClick={this.onBudgetClick.bind(this)} groupKey={this.state.groupKey} items={this.state.last_budget} />
             </div>
           }
           {this.state.last_budget == null && <Loading show={true} />}
@@ -125,6 +150,7 @@ export default class Bubble extends BaseComponent {
                 className='glyphicon glyphicon-remove-circle'>&nbsp;</div>
               }
               <p>{this._name(infoBudget) } </p>
+              <p>科目代碼：{infoBudget.code} </p>
               <p>本年度預算：{unitconverter.convert(infoBudget.amount,null,false)}</p>
               <p>前一年度預算：{unitconverter.convert(infoBudget.last_amount,null,false)}  
                 {infoBudget.change != null && infoBudget.change != 0 && 

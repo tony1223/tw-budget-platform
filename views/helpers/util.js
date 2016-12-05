@@ -227,8 +227,15 @@ var util = {
       return results;
     });
   },
+  process_gov_type(meta_links){
+    if(meta_links && meta_links.gov_type){
+      return this.requestJSONs([meta_links["gov_type"]]).then(([data])=>{
+        return data;
+      });
+    }
+    return Promise.resolve(null);
+  },
   getBudgetInfos(budget_file_type,budget_links){
-
 
     if(budget_file_type =="1"){
       return this.getBudgetInfos_v1_header_csv(budget_file_type,budget_links);

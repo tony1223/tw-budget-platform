@@ -8,6 +8,7 @@ import unitconverter from "./../helpers/unitconverter.jsx";
 export default class D3BudgetTreeMap{
 
   constructor(el,props,state){
+
     var defaultProps = {width:960,height:500};
 
     for(var k in defaultProps){
@@ -61,7 +62,7 @@ export default class D3BudgetTreeMap{
         .attr("dy", ".75em");
 
     grandparent.on("mouseover", ()=>{
-      this.onOver(this.currentDrill || state.root);
+      this.onOver(this.currentDrill || this.root);
     });
 
     this.update(el, state);
@@ -78,6 +79,7 @@ export default class D3BudgetTreeMap{
     var svg = this.svg;
 
     var root = state.root;
+    this.root = root;
 
     this.root = root;
     var x = d3.scale.linear()
@@ -156,7 +158,13 @@ export default class D3BudgetTreeMap{
           this.onOver(d);
         })
         .on("mouseover", this.onOver.bind(this))
-        .on("mouseout",this.onOver.bind(this,[this.currentDrill]));
+        .on("mouseout",() => {
+
+          this.onOver.apply(this,
+            [
+              this.currentDrill || this.root
+            ]);
+      });
 
     g.selectAll(".child")
         .data(function(d) { return d._children || [d]; })

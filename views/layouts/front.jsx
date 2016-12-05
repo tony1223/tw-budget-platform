@@ -54,6 +54,8 @@ export default class FrontLayout extends React.Component {
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css" />
           <link rel="stylesheet" href={asset_url("css/main.css")} />
+          <link rel="stylesheet" href={asset_url("css/radar-chart.min.css")} />
+
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         </head>
         <body>
@@ -74,8 +76,9 @@ export default class FrontLayout extends React.Component {
           
           <script src="/js/jquery-1.11.3.min.js"></script>
 			    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-           <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react-with-addons.min.js"></script> 
-           <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script> 
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react-with-addons.min.js"></script> 
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+          <script src={asset_url("js/radar-chart.js")}></script>
           <script src={"/resource/controller/"+this.props.name+".js"} ></script>
           <script dangerouslySetInnerHTML={{__html:GA}}></script>
         </body>

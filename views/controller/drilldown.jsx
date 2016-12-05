@@ -11,6 +11,8 @@ import Util from '../helpers/util';
 
 import BaseComponent from './../components/BaseComponent.jsx';
 import BarChart from 'react-bar-chart';
+import D3Radar from './../components/d3Radar.jsx';
+import cx from 'classnames';
 
 
 export default class Drilldown extends BaseComponent {
@@ -53,7 +55,7 @@ export default class Drilldown extends BaseComponent {
       
     }
 
-    this.state = {};
+    this.state = {purpose_type:"radar"};
 
   }
   
@@ -159,6 +161,11 @@ export default class Drilldown extends BaseComponent {
   }
 
   _lookup_child_purpose(drill,codeMetas){
+
+    if(drill._purpose != null){
+      return drill._purpose;
+    }
+
     var ret = {};
     var purposes = [];
     var childrens = drill._children || drill.children;
@@ -186,6 +193,7 @@ export default class Drilldown extends BaseComponent {
         }
       }
     });
+    drill._purpose = ret;
     return ret;
   }
 
@@ -213,13 +221,15 @@ export default class Drilldown extends BaseComponent {
       }
       return 1;
     };
-    var okeys = Object.keys(metas).sort(function(n1,n2){
+    var okeys = Object.keys(metas);
+    /* .sort(function(n1,n2){
       return sortnum(n1) - sortnum(n2);
     });
+    */
 
     return okeys.map((key)=>{
       return {name:key,value:metas[key] * 1000};
-    }).filter(k=>k.value > 0);
+    });
   }
   _drill_names(drill,ignoreParent){
     if(drill == null){
@@ -240,10 +250,28 @@ export default class Drilldown extends BaseComponent {
     }
     return [drill.name] ;
   }
+  onSelectPurposeType(type){
+    this.setState({purpose_type:type})
+  }
 
   render(){
     var {data,codeMetas,selectedDrill,last_budget,currentDrill} = this.state;
-    var meta_info = this._find_meta_details(selectedDrill,codeMetas);
+    var meta_info = null;
+    var currentRadarData = null;
+    if(selectedDrill != null){
+      var meta_detail = this._find_meta_details(selectedDrill,codeMetas);
+      meta_info = meta_detail;//.filter(k=>k.value > 0);
+      currentRadarData = [[{axes:meta_detail.filter(
+        k => {
+          return k.name != "經常支出小計" && 
+            k.name != "資本支出小計" && 
+            k.name != "合計";
+      }).map((k)=>{
+        return {axis:k.name,value:k.value,
+          yOffset: k.name == "預備金_經" ? 20:0,
+          valueText:unitconverter.convert(k.value,null,false)}
+      })}]];
+    }
     // var {drilldown} = data;
     return (
       <div>
@@ -287,7 +315,13 @@ export default class Drilldown extends BaseComponent {
                   <tr>
                     <td>用途別資料</td>
                     <td> 
-                      {meta_info.map((data)=><div>
+                      <ul className="nav nav-tabs">
+                        <li  onClick={this.onSelectPurposeType.bind(this,"radar")}  role="presentation" className={cx({active:this.state.purpose_type=="radar"})}><a href="#">雷達圖</a></li>
+                        <li  onClick={this.onSelectPurposeType.bind(this,"table")} role="presentation" className={cx({active:this.state.purpose_type=="table"})}><a href="#">文字表格</a></li>
+                      </ul>
+                      {this.state.purpose_type=="radar" && currentRadarData && <D3Radar ref="d3" width="300" height="300" data={currentRadarData} />}
+
+                      {this.state.purpose_type=="table" && meta_info.map((data)=><div>
                           <p>{data.name}: 
                             
                             <span dangerouslySetInnerHTML={{__html:Util.refine_amount(data.value)}}>
@@ -302,7 +336,7 @@ export default class Drilldown extends BaseComponent {
                     子項目資料
                   </td>
                   <td>
-                    還有 { selectedDrill && selectedDrill._children.length } 個子預算類別，
+                    還有 { selectedDrill && selectedDrill._children && selectedDrill._children.length } 個子預算類別，
                     總計展開後有 { selectedDrill && this._drillSections(selectedDrill) } 個子預算項目。
                   </td>
                 </tr>
@@ -310,6 +344,7 @@ export default class Drilldown extends BaseComponent {
             </table>
           </div>
         </div>
+        <hr />
         <hr />
         <BudgetTable  codeMetas={codeMetas}  filter={this._drill_names(currentDrill)} waiting={false}  items={last_budget} />  
       </div>

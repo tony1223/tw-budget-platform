@@ -18,6 +18,13 @@ export default class D3BudgetBubble1 extends BaseComponent {
 
   constructor(props){
     super(props);
+
+    this.state = {
+        maxRadius: 40,
+        minRadius: 6,
+        padding: 10, // separation between same-color nodes
+        clusterPadding: 10
+    };
     // {
     //   root: this.state.sampleData
     // }
@@ -43,7 +50,9 @@ export default class D3BudgetBubble1 extends BaseComponent {
   }
 
   componentDidMount() {
-    this._draw();
+    this._groupKey = this.props.groupKey;
+    this._draw(this.props.groupKey);
+
     d3util._drawScaleReference(d3.select(React.findDOMNode(this.refs.scale)));
   }
 
@@ -71,6 +80,14 @@ export default class D3BudgetBubble1 extends BaseComponent {
   //   return clusters[item[varname]];
   // }
 
+  componentWillReceiveProps(nextProps){
+    if(nextProps && nextProps.groupKey &&  nextProps.groupKey != this.props.groupKey){
+      this._groupKey = nextProps.groupKey;
+      this._update(nextProps.groupKey);
+    }
+  }
+
+
   onBudgetClick(d,cluster){
     this.props.onBudgetClick && this.props.onBudgetClick(d,cluster);
   }
@@ -79,7 +96,7 @@ export default class D3BudgetBubble1 extends BaseComponent {
     this.props.onBudgetOver && this.props.onBudgetOver(d,cluster);
   }
 
-  _draw(){
+  _update(groupKey){
 
     var that = this;
     var el = React.findDOMNode(this);
@@ -90,13 +107,23 @@ export default class D3BudgetBubble1 extends BaseComponent {
         padding = 10, // separation between same-color nodes
         clusterPadding = 10;
 
-    var nodes = this.props.items;
-    var clusters = this.getCenters(nodes,this.props.groupKey);
+    var nodes = this.props.items.map(item=> {
+      var ret = {};
+      for(var k in item){
+        ret[k]= item[k];
+      }
+      return ret;
+    });
+    var clusters = this.getCenters(nodes,groupKey);
+
+    this._clusters = clusters;
 
     var grid_height = Math.max(500,d3.max(Object.keys(clusters),
       (c)=> (clusters[c].items) / 10) * 20);
     var grid_width = Math.min(width,250); 
 
+    this._grid_width = grid_width;
+    this._grid_height = grid_height;
 
     var horizonal = Math.floor(width / grid_width);
     if(horizonal <= 1 ){
@@ -105,19 +132,6 @@ export default class D3BudgetBubble1 extends BaseComponent {
     }
 
     var margin = {top:grid_height/2 + 100,left:Math.max(120,grid_width/2) };
-
-
-    // var nodes = d3.range(n).map(function(ind) {
-    //   var i = Math.floor(Math.random() * m),
-    //       r = Math.sqrt((i + 1) / m * -Math.log(Math.random())) * maxRadius,
-    //       d = {cluster: i, radius: r };
-    //   if (!clusters[i] || (r > clusters[i].radius)){
-    //     clusters[i] = d;
-    //   }
-    //   return d;
-    // });
-
-
 
     var cluster_array = [];
 
@@ -141,17 +155,194 @@ export default class D3BudgetBubble1 extends BaseComponent {
         [d3.min(nodes,n => n.amount ),d3.max(nodes,n=> n.amount )]
     ).range([minRadius, maxRadius]);  
 
+    nodes.forEach(d =>{
+      if(d.fixed){
+        return true;
+      }
 
-    // var scaleR = d3.scale.linear().
-    //   domain([d3.min(nodes,n => n.amount ),d3.max(nodes,n=> n.amount )])
-    //   .range([5, maxRadius]);
+      var cluster = clusters[d[groupKey]];
+      d.gx = cluster.cluterIndex % horizonal;
+      d.gy = (Math.floor(cluster.cluterIndex / horizonal));
+      d.x =  margin.left + grid_width * d.gx + ( grid_width/2);
+
+      if(d.change == null){
+        d.y =  margin.top + grid_height * d.gy ;
+      }else if(d.change == 0 ){
+        d.y =  margin.top + grid_height * d.gy;
+      }else{
+        d.y =  margin.top + grid_height * d.gy + (d.change > 0 ?(grid_height/2) : -1* (grid_height/2)) ;
+      }
+
+      return;
+    });
+
+    var height =  grid_height * (Math.ceil(cluster_array.length / horizonal)) ;
+
+    var svg = d3.select(React.findDOMNode(this.refs.svg))
+        .attr("width", width)
+        .attr("height", height);
+
+    // var labels = svg.selectAll(".label")
+    //     .data(cluster_array);
+
+    this._update_cluster_header(svg,cluster_array);
+
+    // var lines = svg.selectAll(".lines").data(cluster_array);
+
+    var update_circle = svg.selectAll("circle")
+        .data(nodes);
+
+    update_circle.attr("cx", d => d.x).attr("cy", d => d.y)
+
+    this.force(update_circle,nodes,width,height,scaleR);
+
+
+
+  }
+
+  _update_cluster_header(svg,cluster_array){
+
+    var update = svg.selectAll(".lines")
+      .data(cluster_array);
+
+    update.select(".text-name")
+      .text(function (d) { return d.name })
+      .attr("x",function({d}){ 
+        return d.x - this.getComputedTextLength() /2 ;
+      })
+      .attr("y",({d}) => d.y - (this._grid_height/2) );
+
+    update.select(".text-amount")
+      .text(function (d) { return unitconverter.convert(d.amount,null,false) })
+      .attr("x",function({d}){ 
+        return d.x - this.getComputedTextLength() /2 ;
+      })
+      .attr("y",({d}) => d.y - (this._grid_height/2) + 30 )
+      .attr("class", "text-amount");
+
+    update.select(".line-0")
+      .attr("x1",cluster => cluster.d.x - this._grid_width/2 + 20 )
+      .attr("y1",cluster => cluster.d.y - this._grid_height/2 + 50 )
+      .attr("x2",cluster => cluster.d.x + this._grid_width/2 - 20 )
+      .attr("y2",cluster => cluster.d.y - this._grid_height/2 + 50 );
+
+    update.select(".line-1")
+      .attr("x1",cluster =>cluster.d.x - this._grid_width/2 + 20 )
+      .attr("y1",cluster =>cluster.d.y - this._grid_height/2 - 30 )
+      .attr("x2",cluster =>cluster.d.x + this._grid_width/2 - 20 )
+      .attr("y2",cluster =>cluster.d.y - this._grid_height/2 - 30 );
+
+    var lines = update.enter();
+
+    var g = lines.append("g")
+      .attr("class","lines");
+    
+    g.append("line")
+      .attr("x1",cluster => cluster.d.x - this._grid_width/2 + 20 )
+      .attr("y1",cluster => cluster.d.y - this._grid_height/2 + 50 )
+      .attr("x2",cluster => cluster.d.x + this._grid_width/2 - 20 )
+      .attr("y2",cluster => cluster.d.y - this._grid_height/2 + 50 )
+      .style("stroke","black")
+      .style("stroke-width","2")
+      .attr("class", "line-0");
+
+    g.append("line")
+      .attr("x1",cluster =>cluster.d.x - this._grid_width/2 + 20 )
+      .attr("y1",cluster =>cluster.d.y - this._grid_height/2 - 30 )
+      .attr("x2",cluster =>cluster.d.x + this._grid_width/2 - 20 )
+      .attr("y2",cluster =>cluster.d.y - this._grid_height/2 - 30 )
+      .style("stroke","black")
+      .style("stroke-width","2")
+      .attr("class", "line-1");
+
+    g.append("text")
+      .style("font-size", "20px")        
+      .text(function (d) { return d.name })
+      .attr("x",function({d}){ 
+        return d.x - this.getComputedTextLength() /2 ;
+      })
+      .attr("y",({d}) => d.y - (this._grid_height/2) )
+      .attr("class", "text-name");
+
+    g.append("text")
+      .style("font-size", "20px")        
+      .text(function (d) { return unitconverter.convert(d.amount,null,false) })
+      .attr("x",function({d}){ 
+        return d.x - this.getComputedTextLength() /2 ;
+      })
+      .attr("y",({d}) => d.y - (this._grid_height/2) + 30 )
+      .attr("class", "text-amount");
+
+    update.exit().remove();
+
+
+  }
+
+  _draw(groupKey){
+
+    var that = this;
+    var el = React.findDOMNode(this);
+
+
+    var width = $(el).width();
+
+    var {maxRadius, minRadius, 
+      padding, clusterPadding } = this.state ;
+
+    var nodes = this.props.items.map(item=> {
+      var ret = {};
+      for(var k in item){
+        ret[k]= item[k];
+      }
+      return ret;
+    });
+    var clusters = this.getCenters(nodes,groupKey);
+
+    this._clusters = clusters;
+
+    var grid_height = Math.max(500,d3.max(Object.keys(clusters),
+      (c)=> (clusters[c].items) / 10) * 20);
+    var grid_width = Math.min(width,250); 
+
+    this._grid_width = grid_width;
+    this._grid_height = grid_height;
+
+    var horizonal = Math.floor(width / grid_width);
+    if(horizonal <= 1 ){
+      horizonal = 1;
+      grid_width = width;
+    }
+
+    var margin = {top:grid_height/2 + 100,left:Math.max(120,grid_width/2) };
+
+    var cluster_array = [];
+
+    for(var k in clusters){
+      let clu = clusters[k];
+      cluster_array.push(clu);
+    }
+    cluster_array = cluster_array.sort((a,b) => b.amount - a.amount);
+
+    cluster_array.forEach((cluster,ind)=>{
+      cluster.cluterIndex = ind;
+      cluster.d.fixed = true;
+      cluster.d.x =  margin.left + grid_width * (cluster.cluterIndex % horizonal) ;
+      cluster.d.y =  margin.top  + grid_height * (Math.floor(cluster.cluterIndex / horizonal));   
+    })
+
+    // var color = d3.scale.category10()
+    //     .domain(d3.range(ind));
+    
+    var scaleR = d3.scale.pow().exponent(0.5).domain(
+        [d3.min(nodes,n => n.amount ),d3.max(nodes,n=> n.amount )]
+    ).range([minRadius, maxRadius]);  
 
     nodes.forEach(d =>{
       if(d.fixed){
         return true;
       }
 
-      var cluster = clusters[d[this.props.groupKey]];
+      var cluster = clusters[d[groupKey]];
       d.gx = cluster.cluterIndex % horizonal;
       d.gy = (Math.floor(cluster.cluterIndex / horizonal));
       d.x =  margin.left + grid_width * d.gx + ( grid_width/2);
@@ -190,50 +381,9 @@ export default class D3BudgetBubble1 extends BaseComponent {
 
     var color_scale = d3util.getChangeColorScale();
 
-    var labels = svg.selectAll(".label")
-        .data(cluster_array).enter();
+    this._update_cluster_header(svg,cluster_array);
 
-    labels.append("text")
-      .style("font-size", "20px")        
-      .text(function (d) { return d.name })
-      .attr("x",function({d}){ 
-        return d.x - this.getComputedTextLength() /2 ;
-      })
-      .attr("y",({d}) => d.y - (grid_height/2) )
-      .attr("class", "label");
-
-    labels.append("text")
-      .style("font-size", "20px")        
-      .text(function (d) { return unitconverter.convert(d.amount,null,false) })
-      .attr("x",function({d}){ 
-        return d.x - this.getComputedTextLength() /2 ;
-      })
-      .attr("y",({d}) => d.y - (grid_height/2) + 30 )
-      .attr("class", "label");
-
-    
-    var lines = svg.selectAll(".lines").data(cluster_array).enter();
-    lines
-      .append("line")
-      .attr("x1",cluster => cluster.d.x - grid_width/2 + 20) 
-      .attr("y1",cluster => cluster.d.y - grid_height/2 + 50)
-      .attr("x2",cluster => cluster.d.x + grid_width/2 - 20) 
-      .attr("y2",cluster => cluster.d.y - grid_height/2 + 50)
-      .style("stroke","black")
-      .style("stroke-width","2")
-      .attr("class", "lines");
-
-    lines
-      .append("line")
-      .attr("x1",cluster => cluster.d.x - grid_width/2 + 20) 
-      .attr("y1",cluster => cluster.d.y - grid_height/2 - 30)
-      .attr("x2",cluster => cluster.d.x + grid_width/2 - 20) 
-      .attr("y2",cluster => cluster.d.y - grid_height/2 - 30)
-      .style("stroke","black")
-      .style("stroke-width","2")
-      .attr("class", "lines");
-
-
+    svg.selectAll("circle").remove();
     var node = svg.selectAll("circle")
         .data(nodes)
       .enter().append("circle")
@@ -251,41 +401,54 @@ export default class D3BudgetBubble1 extends BaseComponent {
 
           return color_scale(unitconverter._percent(d.change,d.last_amount));
         })
-        .on("click",(d)=>{ this.onBudgetClick(d,clusters[d[that.props.groupKey]]); })
-        .on("mouseover",(d)=>{ this.onBudgetOver(d,clusters[d[that.props.groupKey]]); });
-
-
+        .on("click",(d)=>{ this.onBudgetClick(d,this._clusters[d[this._groupKey]]); })
+        .on("mouseover",(d)=>{ this.onBudgetOver(d,this._clusters[d[this._groupKey]]); });
     // return true;
+    
+    this.force(node,nodes,width,height,scaleR);
+
+  }
+
+  force(node,nodes,width,height,scaleR){
+
+    var {maxRadius, minRadius, 
+      padding, clusterPadding } = this.state ; 
+
+    this._nodeSvg = node;
+
     var force = d3.layout.force()
         .nodes(nodes)
         .size([width, height])
         .gravity(.000003)
         .charge(0)
-        // .alpha(2)
-        .on("tick", tick);
+        .alpha(2)
+        .on("tick", (e) => {
+          tick(this._nodeSvg,this._nodes,this._clusters,this._groupKey,this._grid_width,e);
+      });
+    this._nodes = nodes;
     force.start();
-    var safe = 0;
-    while(force.alpha() > 0.01){
-      force.tick();
-      safe ++;
-      if(safe > 1000){
-        break;
-      }
-    }
+    // var safe = 0;
+    // while(force.alpha() > 0.01){
+    //   force.tick();
+    //   safe ++;
+    //   if(safe > 20){
+    //     break;
+    //   }
+    // }
 
-    function tick(e) {
+    function tick(node,nodes,clusters,groupKey,grid_width,e) {
       node
-          .each(cluster(5 * e.alpha * e.alpha))
-          .each(collide(.05))
+          .each(cluster(clusters,groupKey,5 * e.alpha * e.alpha))
+          .each(collide(nodes,clusters,groupKey,grid_width,.05))
           .attr("cx", function(d) { return d.x; })
           .attr("cy", function(d) { return d.y; });
     }
 
     // Move d to be adjacent to the cluster node.
 
-    function cluster(alpha) {
+    function cluster(clusters,groupKey,alpha) {
       return function(d) {
-        var cluster = clusters[d[that.props.groupKey]];
+        var cluster = clusters[d[groupKey]];
 
         var x = d.x - cluster.d.x,
             y = d.y - cluster.d.y,
@@ -307,7 +470,7 @@ export default class D3BudgetBubble1 extends BaseComponent {
     }
 
     // Resolves collisions between d and all other circles.
-    function collide(alpha) {
+    function collide(nodes,clusters,groupKey,grid_width,alpha) {
       var quadtree = d3.geom.quadtree(nodes);
       return function(d) {
         var r = scaleR(d.amount) + maxRadius + Math.max(padding, clusterPadding),
@@ -317,7 +480,7 @@ export default class D3BudgetBubble1 extends BaseComponent {
             ny2 = d.y + r;
         quadtree.visit(function(quad, x1, y1, x2, y2) {
           if (quad.point && (quad.point !== d)) {
-            var cluster = clusters[d[that.props.groupKey]];
+            var cluster = clusters[d[groupKey]];
             var x = d.x - quad.point.x,
                 y = d.y - quad.point.y,
                 l = Math.sqrt(x * x + y * y),
@@ -346,7 +509,6 @@ export default class D3BudgetBubble1 extends BaseComponent {
         });
       };
     }
-
 
   }
 

@@ -82,7 +82,11 @@ class BudgetTableRow extends BaseComponent {
 
   render(){
     var b = this.props.item;
-    var meta_purpose_info = this._find_meta_details();
+    var meta_purpose_info = null;
+
+    if(this.state.open){
+      meta_purpose_info = this._find_meta_details();
+    }
     return (
       <tbody stlye={{display: this.props.show? '':'none'}}>
         <tr>

@@ -81,7 +81,8 @@ router.get('/bubble/:id', function(req, res, next) {
         budget_links:data.budgets,
         budget_id:data.id,
         budget_file_type:data.budget_file_type,
-        budget_meta_links:data.budget_meta_links
+        budget_meta_links:data.meta_links
+
       }
     });
   });
@@ -103,6 +104,21 @@ router.get('/bubble-test', function(req, res, next) {
       budget_links:[budget],
       budget_id:-1,
       budget_file_type:budget_type
+    }
+  });
+});
+
+
+router.get('/radar-test', function(req, res, next) {
+
+  res.render('dispatch.jsx', 
+  { 
+    comp:'radar',
+    layout:'front',
+    nav:"home",
+    budget_id:-1,
+    pageInfo:{},
+    views:{
     }
   });
 });
