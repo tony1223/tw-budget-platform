@@ -43,6 +43,7 @@ export default class Drilldown extends BaseComponent {
         this.chart = new BudgetTreeMap(el, {
           width: width - 15,
           height: height,
+          type:this.props.budget_file_type,
           // height: 1000,
           onOverBudget:(d) =>{
             this.setState({selectedDrill:d});
@@ -255,6 +256,7 @@ export default class Drilldown extends BaseComponent {
   }
 
   render(){
+
     var {data,codeMetas,selectedDrill,last_budget,currentDrill} = this.state;
     var meta_info = null;
     var currentRadarData = null;
@@ -298,7 +300,10 @@ export default class Drilldown extends BaseComponent {
                         { selectedDrill && unitconverter.convert(selectedDrill.value,null,false) }
                       </span>
                     </p>
-                    <p> (即為{ selectedDrill && unitconverter.convert(selectedDrill.value,-1,true) }) </p>
+                    {this.props.budget_file_type != 2 && 
+                      <p> (即為{ selectedDrill && unitconverter.convert(selectedDrill.value,-1,true) }) </p>
+                    }
+                    
                   </td>
                 </tr>
                 <tr>
@@ -344,9 +349,13 @@ export default class Drilldown extends BaseComponent {
             </table>
           </div>
         </div>
-        <hr />
-        <hr />
-        <BudgetTable  codeMetas={codeMetas}  filter={this._drill_names(currentDrill)} waiting={false}  items={last_budget} />  
+        {this.props.budget_file_type != 2 && 
+          <div>
+            <hr />
+            <hr />
+            <BudgetTable  codeMetas={codeMetas}  filter={this._drill_names(currentDrill)} waiting={false}  items={last_budget} />  
+          </div>
+        }
       </div>
     );
   }

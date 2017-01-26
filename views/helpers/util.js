@@ -229,8 +229,13 @@ var util = {
   },
   process_gov_type(meta_links){
     if(meta_links && meta_links.gov_type){
-      return this.requestJSONs([meta_links["gov_type"]]).then(([data])=>{
-        return data;
+      return this.requestJSONs([meta_links["gov_type"]])
+        .then(([data,summary])=>{
+
+          return data.map(d=>{
+            return {"代碼": d["編號"],"名稱":d["名稱"],"大政式分類":d["大政式分類"]};
+          });
+
       });
     }
     return Promise.resolve(null);
@@ -240,9 +245,9 @@ var util = {
     if(budget_file_type =="1"){
       return this.getBudgetInfos_v1_header_csv(budget_file_type,budget_links);
     }
-    // if(budget_file_type == null || budget_file_type == 0){
-    return this.getBudgetInfos_v0_default_json(budget_file_type,budget_links);
-    // }
+    if(budget_file_type == null || budget_file_type == 0 || budget_file_type == 2){
+      return this.getBudgetInfos_v0_default_json(budget_file_type,budget_links);
+    }
     
   }
   

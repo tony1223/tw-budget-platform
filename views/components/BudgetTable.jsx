@@ -106,14 +106,16 @@ class BudgetTableRow extends BaseComponent {
           </td>
           <td><button onClick={this.onMoreDetail.bind(this,b)}>看更多細節</button></td>
         </tr>
-        <tr style={{display:this.state.open ?"":"none" }} >
-          <td></td>
-          <td colSpan={9} dangerouslySetInnerHTML={{__html:
-            b.comment
-          }}>
-          </td>
-
-        </tr>
+        {this.props.showDetail && 
+          <tr style={{display:this.state.open ?"":"none" }} >
+            <td></td>
+            <td colSpan={9} dangerouslySetInnerHTML={{__html:
+              b.comment
+            }}>
+            </td>
+          </tr>
+        }
+        
         { meta_purpose_info && (
           <tr style={{display:this.state.open ?"":"none" }} >
             <td></td>

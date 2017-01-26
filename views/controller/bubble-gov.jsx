@@ -33,17 +33,20 @@ export default class Bubble extends BaseComponent {
         if(gov_types){
           var typeMap = {};
           gov_types.forEach(function(type){
-            typeMap[type["代碼"]] = type["名稱"];
+            typeMap[type["代碼"]] = type;
           });
           last_res = res.map((r)=>{
             var gov_key = $.trim(r.code).substring(0,2);
-            r.gov_type = typeMap[gov_key];
+            r.gov_type = typeMap[gov_key]["名稱"];
+            r.gov_summary_type = typeMap[gov_key]["大政式分類"] || r.gov_type;
             return r;
           });
         }
 
+
         this.setState({
-          last_budget:last_res,
+          all_budget:last_res,
+          last_budget:this.get_budget_data(this.state.groupKey,last_res),
           waiting:false
         });
       });
@@ -51,6 +54,62 @@ export default class Bubble extends BaseComponent {
     }
   }
   
+  get_budget_data(groupKey,datas){
+    if(groupKey=="topname"){
+      var data = datas.reduce(function(now,next){
+        var {year,code,amount,last_amount,name,topname,depname,depcat,
+          category,ref,change,gov_type} = next;
+
+        now[topname+"-"+depname] = now[topname+"-"+depname]  || {
+          year,
+          code:"00"+code.substring(2,6)+"0000",
+          amount:0,
+          last_amount:0,
+          name:null,
+          topname,
+          depname,
+          depcat:null,
+          category:null,ref,change:0,gov_type
+        };
+
+        now[topname+"-"+depname].amount += amount;
+        now[topname+"-"+depname].last_amount += last_amount;
+        now[topname+"-"+depname].change += change;
+        return now;
+      },{});
+
+      return Object.keys(data).map((k)=> data[k] );
+    }else if(groupKey == "gov_type"){
+      var data = datas.reduce(function(now,next){
+        var {year,code,amount,last_amount,name,topname,depname,depcat,
+          category,ref,change,gov_type,gov_summary_type} = next;
+
+        var nowkey = gov_summary_type+"-"+gov_type;
+        now[nowkey] = now[nowkey]  || {
+          year,
+          code:code.substring(0,2)+"00000000",
+          amount:0,
+          last_amount:0,
+          name:null,
+          topname:gov_summary_type,
+          depname:gov_type,
+          depcat:null,
+          category:null,
+          ref,
+          change:0,
+          gov_type,
+          gov_summary_type
+        };
+
+        now[nowkey].amount += amount;
+        now[nowkey].last_amount += last_amount;
+        now[nowkey].change += change;
+        return now;
+      },{});
+
+      return Object.keys(data).map((k)=> data[k] );
+    }
+  }
 
   componentDidMount() {
     
@@ -76,12 +135,29 @@ export default class Bubble extends BaseComponent {
   }
 
   onChangeGroupKey(type){
-    this.setState({groupKey:type});
+    console.log(type);
+    this.setState({groupKey:type,
+      last_budget:this.get_budget_data(type,this.state.all_budget)
+    });
   }
 
 
   _name(d) {
-    return `${d.topname} > ${d.depname} > ${d.category} > ${d.name} `;
+    var out = [];
+    if(d.topname){
+      out.push(d.topname);
+    }
+    if(d.depname){
+      out.push(d.depname);
+    }
+    if(d.category){
+      out.push(d.category);
+    }
+    if(d.name){
+      out.push(d.name);
+    }
+
+    return out.join(" > ");
   }
 
   cancelSelect(){
@@ -122,7 +198,7 @@ export default class Bubble extends BaseComponent {
                     (<button onClick={this.onChangeGroupKey.bind(this,"gov_type")} type="button" className={cx({"btn":true,"btn-default":true,"btn-primary":this.state.groupKey == "gov_type"})}>政事別</button>)}
               </div>
               <D3BudgetBubble onBudgetOver={this.onBudgetOver.bind(this)}
-                onBudgetClick={this.onBudgetClick.bind(this)} groupKey={this.state.groupKey} items={this.state.last_budget} />
+                onBudgetClick={this.onBudgetClick.bind(this)} groupKey="topname" items={this.state.last_budget} />
             </div>
           }
           {this.state.last_budget == null && <Loading show={true} />}
@@ -163,14 +239,17 @@ export default class Bubble extends BaseComponent {
 
             {selectedBudget &&<div style={{"height":"90%",'text-align':'left',"padding":"0 0 40px 0","overflow":"auto"}} className="">
               
-              詳細資料 
-              <hr />            
-              <div className='row col-md-8 col-md-offset-2'>
-                <div dangerouslySetInnerHTML={{__html: infoBudget.comment}} />
-                <br />
-                <br />
-              </div>
-              <hr style={{clear:"both"}} /> 
+              {infoBudget.comment && <div>
+                詳細資料 
+                <hr />            
+                <div className='row col-md-8 col-md-offset-2'>
+                  <div dangerouslySetInnerHTML={{__html: infoBudget.comment}} />
+                  <br />
+                  <br />
+                </div>
+                <hr style={{clear:"both"}} /> 
+
+              </div>}
               網友留言 
               <hr />
               <div className='col-md-12'>

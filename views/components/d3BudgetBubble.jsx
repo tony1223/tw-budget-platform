@@ -80,10 +80,15 @@ export default class D3BudgetBubble1 extends BaseComponent {
   //   return clusters[item[varname]];
   // }
 
-  componentWillReceiveProps(nextProps){
+  componentWillUpdate(nextProps, nextState){
+
     if(nextProps && nextProps.groupKey &&  nextProps.groupKey != this.props.groupKey){
       this._groupKey = nextProps.groupKey;
-      this._update(nextProps.groupKey);
+    }
+
+    if(nextProps.items && nextProps.items.length != this.props.items.length){
+      console.log("update");
+      this._update(this._groupKey,nextProps.items);    
     }
   }
 
@@ -96,7 +101,11 @@ export default class D3BudgetBubble1 extends BaseComponent {
     this.props.onBudgetOver && this.props.onBudgetOver(d,cluster);
   }
 
-  _update(groupKey){
+  _update(groupKey,items){
+
+
+    this._draw(groupKey,items);
+    return true;
 
     var that = this;
     var el = React.findDOMNode(this);
@@ -107,7 +116,8 @@ export default class D3BudgetBubble1 extends BaseComponent {
         padding = 10, // separation between same-color nodes
         clusterPadding = 10;
 
-    var nodes = this.props.items.map(item=> {
+    var nowitems = items || this.props.items;
+    var nodes = nowitems.map(item=> {
       var ret = {};
       for(var k in item){
         ret[k]= item[k];
@@ -181,7 +191,6 @@ export default class D3BudgetBubble1 extends BaseComponent {
     var svg = d3.select(React.findDOMNode(this.refs.svg))
         .attr("width", width)
         .attr("height", height);
-
     // var labels = svg.selectAll(".label")
     //     .data(cluster_array);
 
@@ -278,7 +287,7 @@ export default class D3BudgetBubble1 extends BaseComponent {
 
   }
 
-  _draw(groupKey){
+  _draw(groupKey,items){
 
     var that = this;
     var el = React.findDOMNode(this);
@@ -289,7 +298,7 @@ export default class D3BudgetBubble1 extends BaseComponent {
     var {maxRadius, minRadius, 
       padding, clusterPadding } = this.state ;
 
-    var nodes = this.props.items.map(item=> {
+    var nodes = (items || this.props.items).map(item=> {
       var ret = {};
       for(var k in item){
         ret[k]= item[k];

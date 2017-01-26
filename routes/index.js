@@ -48,7 +48,6 @@ router.get('/', function(req, res, next) {
 router.get('/drilldown/:id', function(req, res, next) {
   var budget = req.params.id;
   BudgetModel.get(budget).then(function(data){
-    console.log(data);    
     res.render('dispatch.jsx', 
     { 
       comp:'drilldown',
@@ -70,9 +69,10 @@ router.get('/drilldown/:id', function(req, res, next) {
 router.get('/bubble/:id', function(req, res, next) {
   var budget = req.params.id;
   BudgetModel.get(budget).then(function(data){
+
     res.render('dispatch.jsx', 
     { 
-      comp:'bubble',
+      comp: data.budget_file_type == "2" ? 'bubble-gov': 'bubble',
       layout:'front',
       nav:"home",
       budget_id:budget,

@@ -86,7 +86,7 @@ export default class TableView extends BaseComponent {
         </ul>
         {this.state._subnav == 'all' && <div style={{padding:"15px"}} className={cx({row:1})}>
           <br />
-          <BudgetTable codeMetas={codeMetas} waiting={this.state.waiting}  items={last_budget} />  
+          <BudgetTable showDetail={this.props.budget_file_type != 2} codeMetas={codeMetas} waiting={this.state.waiting}  items={last_budget} />  
         </div>}
         {
           this.state._subnav != 'all' && <div style={{padding:"15px"}} className={cx({row:1,hidden:this.state._subnav == 'all'})}>
