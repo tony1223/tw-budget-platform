@@ -184,9 +184,9 @@ export default class D3BudgetTreeMap{
         .attr("dy", ".75em")
         .text((d) =>{ 
           var {x,y} = this.scales;   
-          if((x(d.x + d.dx) - x(d.x) ) < 100 ){
-            return "";
-          }
+          // if((x(d.x + d.dx) - x(d.x) ) < 100 ){
+          //   return "";
+          // }
           return d.name.replace(/[ \t\n\r]+/,""); 
         })
         .call(this._text.bind(this));
@@ -195,9 +195,9 @@ export default class D3BudgetTreeMap{
         .attr("dy", "1.95em")
         .text((d) => { 
           var {x,y} = this.scales;   
-          if((x(d.x + d.dx) - x(d.x) ) < 100 ){
-            return "";
-          }
+          // if((x(d.x + d.dx) - x(d.x) ) < 100 ){
+          //   return "";
+          // }
           return unitconverter.convert(d.value,null) ; 
         })
         .call(this._text.bind(this));
@@ -208,9 +208,9 @@ export default class D3BudgetTreeMap{
         } )
         .text((d) => { 
           var {x,y} = this.scales;   
-          if((x(d.x + d.dx) - x(d.x) ) < 50 ){
-            return "";
-          }
+          // if((x(d.x + d.dx) - x(d.x) ) < 50 ){
+          //   return "";
+          // }
           return ""+ (parseInt((d.value / this.root.value )* 10000,10)/100) +"%";; 
         })
         .call(this._text.bind(this));
