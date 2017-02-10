@@ -37,8 +37,8 @@ export default class Bubble extends BaseComponent {
           });
           last_res = res.map((r)=>{
             var gov_key = $.trim(r.code).substring(0,2);
-            r.gov_type = typeMap[gov_key]["名稱"];
-            r.gov_summary_type = typeMap[gov_key]["大政式分類"] || r.gov_type;
+            r.gov_type = typeMap[gov_key] && typeMap[gov_key]["名稱"];
+            r.gov_summary_type = typeMap[gov_key] && typeMap[gov_key]["大政式分類"] || r.gov_type;
             return r;
           });
         }
@@ -81,8 +81,13 @@ export default class Bubble extends BaseComponent {
       return Object.keys(data).map((k)=> data[k] );
     }else if(groupKey == "gov_type"){
       var data = datas.reduce(function(now,next){
+
         var {year,code,amount,last_amount,name,topname,depname,depcat,
           category,ref,change,gov_type,gov_summary_type} = next;
+
+          if(code.substring(0,2)=="00"){
+            return now;
+          }
 
         var nowkey = gov_summary_type+"-"+gov_type;
         now[nowkey] = now[nowkey]  || {
