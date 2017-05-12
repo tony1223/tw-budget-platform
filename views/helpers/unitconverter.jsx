@@ -37,7 +37,8 @@ class UnitMapper{
   }
 
   _num(val, divide, floats){
-    return parseInt(val / divide * Math.pow(10, 2), 10) / Math.pow(10, floats);
+    // console.log(((val / divide * Math.pow(10, 2))),Math.round(val / divide * Math.pow(10, 2)));
+    return parseInt(Math.round(val / divide * Math.pow(10, 2)), 10) / Math.pow(10, floats);
   }
 
   convert(value2, des_unit, full_desc){

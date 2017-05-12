@@ -87,7 +87,7 @@ export default class D3BudgetBubble1 extends BaseComponent {
     }
 
     if(nextProps.items && nextProps.items.length != this.props.items.length){
-      console.log("update");
+      // console.log("update");
       this._update(this._groupKey,nextProps.items);    
     }
   }
