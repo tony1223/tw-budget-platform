@@ -37,7 +37,7 @@ router.get('/', function(req, res, next) {
         description:"迅速產生預算視覺化",
       },
       views:{
-        default_view:Config.default_view=="drilldown" ? "bubble":"drilldown",
+        default_view:Config.default_view=="drilldown" ? "drilldown":"bubble",
         budgets:budgets
       }
     });
@@ -173,7 +173,7 @@ router.get('/upload', function(req, res, next) {
 
 
 router.post('/uploading', upload.single('file'), function(req, res, next) {
-  console.log(req.file);
+  // console.log(req.file);
 // { fieldname: 'file',
 //   originalname: 'testbudget.csv',
 //   encoding: '7bit',
@@ -184,7 +184,7 @@ router.post('/uploading', upload.single('file'), function(req, res, next) {
 //   size: 38961 }
   var content = fs.readFileSync(req.file.path).toString();
 
-  console.log(content);
+  // console.log(content);
   
 });
 

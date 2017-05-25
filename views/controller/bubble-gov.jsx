@@ -141,7 +141,7 @@ export default class Bubble extends BaseComponent {
   }
 
   onChangeGroupKey(type){
-    console.log(type);
+    // console.log(type);
     this.setState({groupKey:type,
       last_budget:this.get_budget_data(type,this.state.all_budget)
     });

@@ -42,7 +42,7 @@ var util = {
   },
   watch:function(label){
     return function(d){
-      console.log(label,d);
+      // console.log(label,d);
       return Promise.resolve(d);
     };
   },
@@ -134,8 +134,8 @@ var util = {
   },
   err:function(){
     return function(){
-      console.log("fail:",message);
-      console.log(arguments);
+      // console.log("fail:",message);
+      // console.log(arguments);
     };
   },
   getBudgetInfos_v0_default_json(budget_file_type,budget_links){
