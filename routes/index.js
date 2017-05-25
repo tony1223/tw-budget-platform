@@ -37,6 +37,7 @@ router.get('/', function(req, res, next) {
         description:"迅速產生預算視覺化",
       },
       views:{
+        default_view:Config.default_view=="drilldown" ? "bubble":"drilldown",
         budgets:budgets
       }
     });

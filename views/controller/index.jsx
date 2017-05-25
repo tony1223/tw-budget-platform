@@ -10,7 +10,7 @@ export default class Index extends BaseComponent {
         
         <ul>
           {this.props.budgets.map((b)=>
-            <li><a href={"/bubble/"+b.id}>{b.title}</a></li>
+            <li><a href={"/"+ this.props.default_view +"/"+b.id}>{b.title}</a></li>
           )}
         </ul>
         <div>

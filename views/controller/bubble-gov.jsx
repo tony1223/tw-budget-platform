@@ -21,7 +21,8 @@ export default class Bubble extends BaseComponent {
     this.state = {
       infoBudget:null,
       selectedBudget:null,
-      groupKey:"topname"
+      groupKey:"topname",
+      info_state:1
     };
 
     if(global.window != null){
@@ -146,6 +147,9 @@ export default class Bubble extends BaseComponent {
     });
   }
 
+  toogle_info_state(state){
+    this.setState({info_state:this.state.info_state == 1 ? 0 : 1});
+  }
 
   _name(d) {
     var out = [];
@@ -218,12 +222,19 @@ export default class Bubble extends BaseComponent {
               height:selectedBudget ? "100%":"auto",
               background:"gray",
               color:"white",
-              "padding":selectedBudget ? "30px 10px 10px 10px": "10px",
+
+              "padding":selectedBudget ? "30px 10px 10px 10px": 
+                this.state.info_state == 1 ? "10px" :"10px 0 0 0 ",
               "text-align":"center",
               "font-size":'20px',
               "border-radius":"15px 15px 0 0"
             }}>
-            {selectedBudget == null && <p className='glyphicon glyphicon-option-horizontal'></p>}
+            {selectedBudget == null && 
+              <p 
+                style={{cursor:"pointer",float: "right","right": "27px"}}
+                onClick={this.toogle_info_state.bind(this)} 
+                className='glyphicon glyphicon-option-horizontal'></p>
+            }
 
 
             <div>
@@ -232,14 +243,18 @@ export default class Bubble extends BaseComponent {
                 className='glyphicon glyphicon-remove-circle'>&nbsp;</div>
               }
               <p>{this._name(infoBudget) } </p>
-              <p>科目代碼：{infoBudget.code} </p>
-              <p>本年度預算：{unitconverter.convert(infoBudget.amount,null,false)}</p>
-              <p>前一年度預算：{unitconverter.convert(infoBudget.last_amount,null,false)}  
-                {infoBudget.change != null && infoBudget.change != 0 && 
-                  <span> {unitconverter.percent(infoBudget.change,infoBudget.last_amount)} </span>
-                }
-              </p>
-              <hr style={{clear:"both"}} /> 
+              {(this.state.info_state ==1 ||selectedBudget) && (<div>
+                
+                <p>科目代碼：{infoBudget.code} </p>
+                <p>本年度預算：{unitconverter.convert(infoBudget.amount,null,false)}</p>
+                <p>前一年度預算：{unitconverter.convert(infoBudget.last_amount,null,false)}  
+                  {infoBudget.change != null && infoBudget.change != 0 && 
+                    <span> {unitconverter.percent(infoBudget.change,infoBudget.last_amount)} </span>
+                  }
+                </p>
+                <hr style={{clear:"both"}} /> 
+              </div>)}
+              
             </div>
 
             {selectedBudget &&<div style={{"height":"90%",'text-align':'left',"padding":"0 0 40px 0","overflow":"auto"}} className="">
