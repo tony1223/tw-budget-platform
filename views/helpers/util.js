@@ -1,4 +1,4 @@
-var Promise = require("promise");
+import Promise from "bluebird";
 import d3 from "d3";
 import CommentHelper from "./comment.jsx";
 

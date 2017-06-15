@@ -11,6 +11,7 @@ import cx from 'classnames';
 import CommentHelper from './../helpers/comment.jsx';
 
 import Util from '../helpers/util';
+import Promise from "bluebird";
 
 export default class TableView extends BaseComponent {
 

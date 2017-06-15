@@ -13,7 +13,7 @@ import BaseComponent from './../components/BaseComponent.jsx';
 import BarChart from 'react-bar-chart';
 import D3Radar from './../components/d3Radar.jsx';
 import cx from 'classnames';
-
+import Promise from "bluebird";
 
 export default class Drilldown extends BaseComponent {
 

@@ -12,6 +12,7 @@ var ReactDisqusThread = require('react-disqus-thread');
 
 import cx from 'classnames';
 import Util from '../helpers/util';
+import Promise from "bluebird";
 
 import BaseComponent from './../components/BaseComponent.jsx';
 export default class Bubble extends BaseComponent {

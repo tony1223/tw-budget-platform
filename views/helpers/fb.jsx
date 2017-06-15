@@ -1,5 +1,5 @@
 
-import Promise from 'promise';
+import Promise from "bluebird";
 
 
 export default {
