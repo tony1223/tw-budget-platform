@@ -110,6 +110,9 @@ module.exports = {
   module:{
     loaders:loadersByExtension(loaders)
   },
+  resolveLoader: {
+    root: path.join(__dirname, 'node_modules')
+  },
   output:output,
   externals:[
     {
